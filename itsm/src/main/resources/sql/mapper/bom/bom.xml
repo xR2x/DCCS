@@ -1,0 +1,668 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.bom.BomMapper"> 
+	
+	<sql id="bomHeaderReadCondition">	
+		<if test="seq != null and seq != ''">
+			AND h.seq = ${seq}
+		</if>
+		<if test="material != null and material != ''">
+		AND h.material LIKE master.searchType(#{material}) 
+		</if>                      
+		<if test="plant != null and plant != ''">
+			AND h.plant LIKE master.searchType(#{plant}) 
+		</if> 	     
+		<if test="revision != null and revision != ''">
+			AND h.revision LIKE master.searchType(#{revision}) 
+		</if> 	
+		<if test="project_code != null and project_code != ''">
+			AND h.project_code LIKE master.searchType(#{project_code}) 
+		</if> 	      
+		<if test="description != null and description != ''">
+			AND h.description LIKE master.searchType(#{description}) 
+		</if>
+		<if test="component != null and component != ''">
+			AND (SELECT COUNT(0) FROM master.bom WHERE company = h.company AND bom_header_seq = h.seq AND component = #{component} AND deletion_flag IS NULL) > 0
+		</if>
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = h.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND h.create_date <![CDATA[>]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND h.create_date <![CDATA[<]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+		<if test="active_flag != null and active_flag != ''">
+			AND h.active_flag = #{active_flag}
+		</if>
+	</sql>
+
+	<select id="bomHeaderRead" resultType="java.util.HashMap">
+		SELECT
+			seq
+			,material
+			,plant
+			,revision
+			,project_code
+			,(SELECT project_name FROM master.project WHERE company = h.company AND project_code = h.project_code) AS project_name
+			,description
+			,active_flag
+			,(SELECT COUNT(0) FROM master.bom WHERE bom_header_seq = h.seq AND deletion_flag IS NULL) AS component_count
+			,creator
+			,(SELECT tv_eff_flag FROM master.material_plant WHERE material = h.material AND plant = h.plant AND deletion_flag IS NULL LIMIT 1) AS tv_eff_flag
+			,(SELECT "name" FROM master.user WHERE user_id = h.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI:SS') AS create_date	    		
+		FROM 
+			master.bom_header h		
+		WHERE
+			company = #{company}
+		<include refid="bomHeaderReadCondition" />
+		AND deletion_flag IS NULL
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>					  
+	</select>
+
+	<select id="bomCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM 
+			master.bom_header h		
+		WHERE
+			company = #{company}
+		<include refid="bomHeaderReadCondition" />			  
+		AND active_flag IS NOT NULL
+		AND deletion_flag IS NULL	
+	</select>  
+
+	<select id="bomItemRead" resultType="java.util.HashMap">
+		SELECT
+			h.material
+			,h.plant
+			,h.revision	
+			,b.item
+			,b.category
+			,b.component
+			,b.qpa
+			,b.uom
+			,b.change_no			
+		FROM 
+			master.bom_header h		
+			INNER JOIN
+			master.bom b
+			ON
+				h.company = b.company
+			AND h.seq = b.bom_header_seq
+		WHERE
+			h.company = #{company}
+		<include refid="bomHeaderReadCondition" />
+		AND h.deletion_flag IS NULL
+		AND b.deletion_flag IS NULL		  
+	</select>
+
+	<select id="getBomHeaderCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM 
+			master.bom_header h		
+		WHERE
+			company		= #{company}
+		AND material	= #{material}
+		AND plant		= #{plant}
+		AND deletion_flag IS NULL	
+	</select>
+	
+	<select id="bomHeaderCreate" resultType="int">	
+		INSERT INTO master.bom_header(
+			company
+			,material
+			,plant
+			,revision
+			,project_code
+			,description
+			,status
+			,active_flag
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{material}
+			,#{plant}
+			,#{revision}
+			,#{project_code}
+			,#{description}
+			,#{status}
+			,#{active_flag}
+			,#{user_id}
+			,NOW()
+		)RETURNING seq
+	</select>
+
+	<select id="bomCreate" resultType="int">	
+		INSERT INTO master.bom(
+			company
+			,bom_header_seq
+			,material
+			,plant
+			,item
+			,category
+			,component
+			,qpa
+			,uom
+			,change_no
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,CAST(#{bom_header_seq} AS INT)
+			,#{material}
+			,#{plant}
+			,CAST(#{item} AS INT)
+			,#{category}
+			,#{component}
+			,CAST(#{qpa} AS NUMERIC)
+			,#{uom}
+			,CAST(#{change_no} AS INT)
+			,#{user_id}
+			,NOW()	
+		)RETURNING seq
+	</select>
+
+	<update id="bomHeaderActiveChange">
+		UPDATE 
+			master.bom_header
+		SET
+			active_flag = #{active_flag}
+		WHERE
+			company 		= #{company} 
+		<if test="seq != null and seq != null">	
+			AND seq	= CAST(#{seq} AS INT)
+		</if>
+		<if test="material != null and material != null">	
+			AND material = #{material}
+		</if>
+		<if test="plant != null and plant != null">	
+			AND plant = #{plant}
+		</if>
+		<if test="revision != null and revision != null">	
+			AND revision = #{revision}
+		</if>
+	</update>
+
+	<update id="bomHeaderUpdate">
+		UPDATE 
+			master.bom_header
+		SET 
+			project_code	= #{project_code}
+			,description	= #{description}
+		WHERE 
+			company 		= #{company} 
+		AND seq				= CAST(#{seq} AS INT)	
+	</update>
+
+	<update id="bomUpdate">
+		UPDATE 
+			master.bom
+		SET 
+			item		= CAST(#{item} AS INT)
+			,category	= #{category}
+			,component	= #{component}
+			,qpa		= CAST(#{qpa} AS NUMERIC)
+			,uom		= #{uom}
+			,change_no	= CAST(#{change_no} AS INT)	
+		WHERE
+			company 	= #{company}
+		AND seq		= CAST(#{seq} AS INT)	
+	</update>
+
+	<update id="bomHeaderDelete">
+		UPDATE 
+			master.bom_header
+		SET 
+			deletion_flag	= 'X'
+		WHERE 
+			company 		= #{company} 
+		AND seq				= CAST(#{seq} AS INT)
+	</update>
+
+	<update id="bomDelete">
+		UPDATE 
+			master.bom
+		SET 
+			deletion_flag	= 'X'
+		WHERE
+			company 		= #{company}
+		AND bom_header_seq	= CAST(#{seq} AS INT)
+	</update>
+
+	<update id="bomDeleteAll">
+		DELETE 
+		FROM
+			master.bom
+		WHERE
+			company 		= #{company}
+		AND bom_header_seq	= CAST(#{seq} AS INT)	
+		<if test="header_change_no != null and header_change_no != ''">
+			AND change_no = #{header_change_no}::INT
+		</if>                      
+	</update>
+
+	<select id="bomHeaderView" resultType="java.util.HashMap">
+		SELECT
+			seq
+			,material
+			,plant
+			,revision
+			,project_code
+			,(SELECT project_name FROM master.project WHERE company = h.company AND project_code = h.project_code) AS project_name
+			,description
+		FROM 
+			master.bom_header h		
+		WHERE
+			company = #{company}
+		AND seq	= CAST(#{seq} AS INT)					  
+	</select>
+
+	<sql id="bomReadCondition">	
+		<if test="bom_header_seq != null and bom_header_seq != ''">
+			AND bom_header_seq 	= CAST(#{bom_header_seq} AS INT)	
+		</if>                      
+		<if test="material != null and material != ''">
+			AND material = #{material}
+		</if>
+		<if test="plant != null and plant != ''">
+			AND plant = #{plant}
+		</if> 	     
+		<if test="change_no != null and change_no != ''">
+			<choose>
+				<when test='allEff != null and allEff != "" and allEff == "X"'>
+				</when>
+				<otherwise>
+					AND change_no = #{change_no}::INT
+				</otherwise>
+			</choose>
+		</if> 	     
+	</sql>
+
+	<select id="bomRead" resultType="java.util.HashMap">
+		SELECT 
+			seq	
+			,bom_header_seq
+			,material
+			,plant
+			,item
+			,category
+			,(SELECT code_name FROM master.common_code WHERE company IN ('COMMON', b.company) AND "type" = 'bom_category' AND code = b.category) AS category_name
+			,component
+			,qpa
+			,uom
+			,change_no
+			,(SELECT tv FROM master.change_number WHERE change_no = b.change_no) AS tv
+			,(SELECT eff_from FROM master.change_number WHERE change_no = b.change_no) AS eff_from
+			,(SELECT eff_to FROM master.change_number WHERE change_no = b.change_no) AS eff_to
+		FROM
+			master.bom b
+		WHERE
+			company = #{company}
+		<include refid="bomReadCondition" />
+		AND deletion_flag IS NULL
+		ORDER BY item			  
+	</select>
+
+	<select id="bomRevisionCheck" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM
+			master.bom_header AS t1
+		WHERE
+			company = #{company}
+		AND material = #{material}
+		AND plant = #{plant}
+		AND revision = #{newRevision}
+		AND deletion_flag IS NULL
+	</select>
+
+	<select id="bomTree" resultType="java.util.HashMap">
+		WITH RECURSIVE bom_tree AS
+		(
+			SELECT
+				seq
+				,company
+				,item
+				,component
+				,plant
+				,material AS parent_material
+				,COALESCE(#{seq}::INT ,0) AS parent_seq
+				,1 AS bom_level
+				,'' || seq AS codes
+				,qpa
+				,category
+				,change_no
+				,create_date
+				,COALESCE(#{seq}::INT ,0) AS target
+			FROM
+				master.bom AS t1
+			WHERE
+				company = #{company}
+			AND material = #{material}
+			AND plant = #{plant}
+			AND bom_header_seq = (SELECT seq FROM master.bom_header WHERE company = t1.company AND material = t1.material AND plant = t1.plant AND active_flag = 'X' AND deletion_flag IS NULL)
+			<if test="tv != null and tv != ''">
+			<!--
+				AND (CASE 
+						WHEN 
+							t1.change_no IS NOT NULL
+						THEN 
+							t1.change_no IN (SELECT change_no FROM master.change_number WHERE material = t1.material AND plant = t1.plant AND tv = #{tv} AND #{eff}::INT BETWEEN eff_from AND eff_to AND deletion_flag IS NULL ORDER BY change_no DESC LIMIT 1)
+						ELSE 
+							true
+					END)
+			-->
+				AND (CASE 
+						WHEN 
+							t1.change_no IS NOT NULL
+						THEN 
+							t1.change_no IN (SELECT c.change_no FROM master.bom as b INNER JOIN master.change_number AS c  on b.company = c.company and b.material = c.material and b.plant = c.plant and b.change_no = c.change_no WHERE c.company = t1.company AND c.material = t1.material AND c.plant = t1.plant AND B.ITEM = T1.ITEM AND c.tv = #{tv} AND #{eff}::INT BETWEEN c.eff_from AND c.eff_to AND c.deletion_flag IS NULL AND b.deletion_flag IS NULL ORDER BY c.change_no DESC LIMIT 1)
+						ELSE 
+							true
+				 END)	 
+			</if>
+			AND deletion_flag IS NULL
+			
+			UNION ALL
+		
+			SELECT
+				t2.seq
+				,t2.company
+				,t2.item
+				,t2.component
+				,t2.plant
+				,t2.material
+				,t1.seq AS parent_seq
+				,t1.bom_level + 1 AS bom_level
+				,t1.codes || '-' || t2.seq AS codes
+				,t2.qpa
+				,t2.category
+				,t2.change_no
+				,t2.create_date
+				,t1.target
+			FROM
+				bom_tree AS t1 INNER JOIN master.bom AS t2
+			ON 
+				t1.company = t2.company
+			AND t1.component = t2.material
+			AND t1.plant = t2.plant
+			WHERE
+				bom_header_seq = (SELECT seq FROM master.bom_header WHERE company = t2.company AND material = t2.material AND plant = t2.plant AND active_flag = 'X' AND deletion_flag IS NULL)
+			<if test="tv != null and tv != ''">
+			<!--
+				AND (CASE 
+						WHEN 
+							t2.change_no IS NOT NULL
+						THEN 
+							t2.change_no IN (SELECT change_no FROM master.change_number WHERE material = t2.material AND plant = t2.plant AND tv = #{tv} AND #{eff}::INT BETWEEN eff_from AND eff_to AND deletion_flag IS NULL ORDER BY change_no DESC LIMIT 1)
+						ELSE 
+							true
+					END)
+			-->
+				AND (CASE 
+						WHEN 
+							t2.change_no IS NOT NULL
+						THEN 
+							t2.change_no IN (SELECT c.change_no FROM master.bom as b INNER JOIN master.change_number AS c  on b.company = c.company and b.material = c.material and b.plant = c.plant and b.change_no = c.change_no WHERE c.company = t2.company AND c.material = t2.material AND c.plant = t2.plant AND B.item = t2.ITEM AND c.tv = #{tv} AND #{eff}::INT BETWEEN c.eff_from AND c.eff_to AND c.deletion_flag IS NULL AND b.deletion_flag IS NULL ORDER BY c.change_no DESC LIMIT 1)
+						ELSE 
+							true
+				 END)	
+			</if>
+			AND t2.deletion_flag IS NULL
+		)
+		
+		SELECT
+			t1.seq
+			,t1.company
+			,t1.item
+			,t1.component
+			,t1.plant
+			,t1.parent_material
+			,t1.parent_seq
+			,CASE WHEN parent_seq = 0 THEN ''||parent_seq ELSE REPLACE(t1.codes, '-'||seq,'') END AS parent
+			,(SELECT code_name FROM master.common_code WHERE company IN ('COMMON', t1.company) AND "type" = 'bom_category' AND code = t1.category) AS category_name
+			,t1.bom_level
+			,t1.codes
+			,t1.qpa
+			,t1.category
+			,t1.change_no
+			,(SELECT COUNT(0) FROM bom_tree WHERE parent_material = t1.component) AS child_count
+			,t2.tv
+			,(CASE WHEN t2.tv IS NOT NULL THEN CONCAT(t2.eff_from,'~',t2.eff_to) ELSE NULL END) AS eff			
+			,t1.target
+		FROM
+			bom_tree AS t1
+			LEFT JOIN
+			master.change_number AS t2
+			ON
+				t1.company = t2.company
+			AND t1.parent_material = t2.material
+			AND t1.plant = t2.plant
+			AND t1.change_no = t2.change_no			
+		WHERE
+			t1.company = #{company}
+			<if test="tv != null and tv != ''">
+			AND	(CASE WHEN 
+					(SELECT COUNT(0) FROM bom_tree WHERE item = t1.item AND bom_level = t1.bom_level GROUP BY item,bom_level) > 0
+				THEN
+					COALESCE((SELECT change_no FROM bom_tree WHERE item = t1.item AND bom_level = t1.bom_level ORDER BY create_date DESC LIMIT 1),0)
+				ELSE
+					COALESCE(t1.change_no,0)
+				END) = COALESCE(t1.change_no,0)
+			</if>
+		ORDER BY codes
+	</select>	
+	
+	<select id="bomTreeImplosionTarget" resultType="java.util.HashMap">
+
+		WITH RECURSIVE bom_tree AS
+		(
+			SELECT
+				seq
+				,company								
+				,material 
+				,plant
+				,change_no
+			FROM
+				master.bom AS t1
+			WHERE
+				company = #{company}
+			AND component = #{material}
+			AND plant = #{plant}
+			AND bom_header_seq = (SELECT seq FROM master.bom_header WHERE company = t1.company AND material = t1.material AND plant = t1.plant AND active_flag = 'X' AND deletion_flag IS NULL)						
+			UNION ALL		
+			SELECT
+				t2.seq
+				,t2.company								
+				,t2.material				
+				,t2.plant
+				,t2.change_no				
+			FROM
+				bom_tree AS t1 INNER JOIN master.bom AS t2
+			ON 
+				t1.company = t2.company
+			AND t1.material = t2.component
+			WHERE
+				bom_header_seq = (SELECT seq FROM master.bom_header WHERE company = t2.company AND material = t2.material AND plant = t2.plant AND active_flag = 'X' AND deletion_flag IS NULL)			
+
+		)		
+		SELECT
+			t1.material
+			,t1.plant					
+		FROM
+			bom_tree AS t1			
+		WHERE
+			t1.company = #{company}
+		AND (SELECT COUNT(0) FROM master.bom WHERE company = t1.company AND component = t1.material and plant = t1.plant AND deletion_flag IS NULL) = 0					
+		GROUP BY t1.material, t1.plant	
+	</select>	
+
+	<select id="bomTreeSummary" resultType="java.util.HashMap">
+		WITH RECURSIVE bom_tree AS
+		(
+			SELECT
+				seq
+				,company
+				,item
+				,component
+				,plant
+				,material AS parent_material
+				,COALESCE(#{seq}::INT ,0) AS parent_seq
+				,1 AS bom_level
+				,'' || seq AS codes
+				,qpa
+				,category
+				,change_no
+				,create_date
+				,COALESCE(#{seq}::INT ,0) AS target
+			FROM
+				master.bom AS t1
+			WHERE
+				company = #{company}
+			AND material = #{material}
+			AND plant = #{plant}
+			AND bom_header_seq = (SELECT seq FROM master.bom_header WHERE company = t1.company AND material = t1.material AND plant = t1.plant AND active_flag = 'X' AND deletion_flag IS NULL)
+			<if test="tv != null and tv != ''">
+				AND (CASE 
+						WHEN 
+							t1.change_no IS NOT NULL
+						THEN 
+							t1.change_no IN (SELECT c.change_no FROM master.bom as b INNER JOIN master.change_number AS c  on b.company = c.company and b.material = c.material and b.plant = c.plant and b.change_no = c.change_no WHERE c.company = t1.company AND c.material = t1.material AND c.plant = t1.plant AND B.ITEM = T1.ITEM AND c.tv = #{tv} AND #{eff}::INT BETWEEN c.eff_from AND c.eff_to AND c.deletion_flag IS NULL AND b.deletion_flag IS NULL ORDER BY c.change_no DESC LIMIT 1)
+						ELSE 
+							true
+				 END)	 
+			</if>
+			AND deletion_flag IS NULL
+			
+			UNION ALL
+		
+			SELECT
+				t2.seq
+				,t2.company
+				,t2.item
+				,t2.component
+				,t2.plant
+				,t2.material
+				,t1.seq AS parent_seq
+				,t1.bom_level + 1 AS bom_level
+				,t1.codes || '-' || t2.seq AS codes
+				,t2.qpa
+				,t2.category
+				,t2.change_no
+				,t2.create_date
+				,t1.target
+			FROM
+				bom_tree AS t1 INNER JOIN master.bom AS t2
+			ON 
+				t1.company = t2.company
+			AND t1.component = t2.material
+			AND t1.plant = t2.plant
+			WHERE
+				bom_header_seq = (SELECT seq FROM master.bom_header WHERE company = t2.company AND material = t2.material AND plant = t2.plant AND active_flag = 'X' AND deletion_flag IS NULL)
+			<if test="tv != null and tv != ''">
+				AND (CASE 
+						WHEN 
+							t2.change_no IS NOT NULL
+						THEN 
+							t2.change_no IN (SELECT c.change_no FROM master.bom as b INNER JOIN master.change_number AS c  on b.company = c.company and b.material = c.material and b.plant = c.plant and b.change_no = c.change_no WHERE c.company = t2.company AND c.material = t2.material AND c.plant = t2.plant AND B.item = t2.ITEM AND c.tv = #{tv} AND #{eff}::INT BETWEEN c.eff_from AND c.eff_to AND c.deletion_flag IS NULL AND b.deletion_flag IS NULL ORDER BY c.change_no DESC LIMIT 1)
+						ELSE 
+							true
+				 END)	
+			</if>
+			AND t2.deletion_flag IS NULL
+		)
+		
+		SELECT
+			t1.company
+			,'0' AS item
+			,t1.component
+			,t1.plant
+			,#{material} AS parent_material
+			,'' AS parent
+			,1 AS bom_level
+			,'' AS  codes
+			,SUM(t1.qpa) AS qpa
+			,0 AS child_count
+			,0 AS target
+		FROM
+			bom_tree AS t1
+			LEFT JOIN
+			master.change_number AS t2
+			ON
+				t1.company = t2.company
+			AND t1.parent_material = t2.material
+			AND t1.plant = t2.plant
+			AND t1.change_no = t2.change_no			
+		WHERE
+			t1.company = #{company}
+			<if test="tv != null and tv != ''">
+			AND	(CASE WHEN 
+					(SELECT COUNT(0) FROM bom_tree WHERE item = t1.item AND bom_level = t1.bom_level GROUP BY item,bom_level) > 0
+				THEN
+					COALESCE((SELECT change_no FROM bom_tree WHERE item = t1.item AND bom_level = t1.bom_level ORDER BY create_date DESC LIMIT 1),0)
+				ELSE
+					COALESCE(t1.change_no,0)
+				END) = COALESCE(t1.change_no,0)
+			</if>
+		GROUP BY t1.company, t1.component, t1.plant 
+		ORDER BY t1.company, t1.component
+	</select>
+	
+	<select id="bomComponentCheck" resultType="int">
+
+		WITH RECURSIVE bom_tree AS
+		(
+			SELECT
+				seq
+				,company								
+				,material 
+				,plant
+			FROM
+				master.bom AS t1
+			WHERE
+				company = #{company}
+			AND component = #{material}
+			AND plant = #{plant}
+			AND bom_header_seq = (SELECT seq FROM master.bom_header WHERE company = t1.company AND material = t1.material AND plant = t1.plant AND active_flag = 'X' AND deletion_flag IS NULL)			
+			AND deletion_flag IS NULL			
+			UNION ALL					
+			SELECT
+				t2.seq
+				,t2.company								
+				,t2.material				
+				,t2.plant
+			FROM
+				bom_tree AS t1 INNER JOIN master.bom AS t2
+			ON 
+				t1.company = t2.company
+			AND t1.material = t2.component
+			WHERE
+				bom_header_seq = (SELECT seq FROM master.bom_header WHERE company = t2.company AND material = t2.material AND plant = t2.plant AND active_flag = 'X' AND deletion_flag IS NULL)			
+			AND deletion_flag IS NULL
+
+		)		
+		SELECT
+			COUNT(0)			
+		FROM
+			bom_tree AS t1			
+		WHERE
+			t1.company = #{company}
+		AND t1.material = #{component}
+		AND t1.plant = #{plant}
+
+	</select>	
+	               
+</mapper>
