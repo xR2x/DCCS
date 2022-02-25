@@ -1,0 +1,173 @@
+.header {
+	height:60px;
+	border-bottom:1px solid #DADADA;
+}
+
+.beforeLoad {
+	position:absolute;
+	top:1px;
+	left:1px;
+	width:calc(100% - 2px);
+	height:calc(100% - 2px);
+	background-color:rgba(255,255,255,.8);
+	z-index:20;
+}
+
+.beforeLoad div {
+	position:absolute;
+	z-index:21;
+	left:calc(50% - 150px);
+	top:calc(50% - 40px);
+	width:300px;
+	height:80px;
+	line-height:80px;
+	color:#666;
+	text-align:center;
+	background:#FFF;
+	border-radius:5px;
+	border: 1px solid #F0F0F0;
+    box-shadow: 0px 1px 0px 0px rgb(0 0 0 / 10%);
+}
+
+.treeArea .line {
+	height:40px;
+}
+
+.treeArea .line:hover {
+	background-color:#E6F7FF;
+}
+
+.treeArea .line.level0 {
+	background-color:#ffed98;
+}
+
+.treeArea .line.level0:hover {
+	background-color:#ffde42;
+}
+
+.treeArea .line.implosion {
+	background-color:#f6ddee;
+}
+
+.treeArea .line.implosion:hover {
+	background-color:#e6c5d8;
+}
+
+.treeArea .line span {
+	display:inline-block;
+	vertical-align:middle;
+	height:40px;
+	line-height:40px;
+	text-align:center;
+	font-size:12px;
+	color:#666;
+	font-family:'NotoSansKR',Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif !important;
+	margin-top:-1px;
+}
+
+.treeArea .line span.component {
+	text-align:left;
+}
+
+.treeArea .line span.component label {
+	height:40px;
+	display:inline-block;
+	vertical-align:middle;
+	font-weight:bold;
+}
+
+.treeArea .line span.component u.depth {
+	text-decoration:none;
+	width:25px;
+	height:40px;
+	display:inline-block;
+	vertical-align:middle;
+	text-align:center;
+}
+
+.treeArea .line span.component u.depth.border {
+	background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAoAQMAAAAyts0AAAAABlBMVEUAAAB+fn79CfTWAAAAAXRSTlMAQObYZgAAACJJREFUKM9jYOBgYGBhYGBiwAQjW45rVQNrqAMufSAwEuUAEUwCtw9qynsAAAAASUVORK5CYII=');
+}
+
+.treeArea .line span.component u.depth icon {
+	cursor:pointer;
+	vertical-align:middle;
+	display:inline-block;
+	width:17px;
+	height:16px;
+	background-image:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADMAAAAQCAMAAACMR7eAAAAAz1BMVEUAAAAAAAB9fX39/f1gTh2vlEwVFRWdhEFlZWXs7Ozm5ubY2NjMzMyWfT5cXFz19fXi4uLU1NTQ0NC1tbWvr6+HbzG0l0lNTU0MDAzIyMh/f38AAADQvIfr1JnMzMzp6eng4OCZmZmOdzhoUx2njUjMzMy9vb2oqKiZmZkUFBQ4ODjIyMidnZ16enp/f3+ioqKZmZny8vLy3qft7e3/6bDt2aP34qr////o6Ojp1KD39/f8562cj2z7+/vj4+Pj0J329vacnJzx3abp6en9/f1nqEhJAAAAMXRSTlMAGWazrKN1pmqzs7Ozp2yzs7Ozs7OlnG1EPiIL5uXW07Ozp6akf39/f2tiW1taWT4+xJ1IsAAAARRJREFUKM+Vy9lygkAQheFGkujgwiqC+76vYSZqQhIjvv8zZQaBJgUX5quuc9FVP0DTfkZ2kz+2BbRtQg67Q1HHBtj0jqi3gRzjj7QxQOH2iW4FyFF8SysClN7TSnDnTiqViZs0r4JPxYbN5YAuUbPSiSwTffWPxjVUmVMN9/FmqskhbZo0/h1Nmp+7Y9yYikJUlSiKCUL1yhil1Kccu1YBagfPO0a8Qw0Eq69XOL1vxY3gUz5xg6JmVtbKnFaePd7sTIUo/MwdCEN2FigVy4YADe+EvAaE1pZBiGGtIVRn34jVeRN8oSBqYD8fDOZ7iJr2GbV5s+wGp1jQXUKW5Iye0MiRJGfxghaOBBkt6a9W5pFJfgF5O1UMuHOwFQAAAABJRU5ErkJggg==');
+	background-position:-17px 0px;
+}
+
+.treeArea .line span.component u.depth icon.open {
+	background-position:0px 0px;
+}
+
+.treeArea .line span.component u.depth icon.noChild {
+	cursor:normal;
+	background-position:-34px 0px;
+}
+
+.childArea .line .depth.border {
+	background-position:-50px 0px;
+}
+
+.childArea .line .depth.border.near {
+	background-position:0px 0px;
+}
+
+.childArea .line.lastChild .depth.border.near {
+	background-position:-25px 0px;
+}
+
+.line.level1:last-child .depth.near {
+	background-position:-25px 0px;
+}
+
+.childArea.level0 {
+	border-bottom:1px solid #EAEAEA;
+}
+
+.mainForm .switchTab {
+	border-top:1px solid #A0A0A0 !important;
+	border-left:1px solid #A0A0A0 !important;
+	border-right:1px solid #D0D0D0 !important;
+	border-bottom:1px solid #D0D0D0 !important;
+	height:35px;
+}
+
+.mainForm .switchTab input[type=radio] + span {
+	height:33px;
+	line-height:33px;
+	font-size:12px;
+	letter-spacing:0px;
+	width:50%;
+	color:#666;
+	text-align:center;
+}
+
+.mainForm .switchTab input[type=radio]:checked + span{
+	color:#888;
+	background-image: linear-gradient(rgba(255,255,255,.2), rgba(255,255,255,0));
+	background-color:#007AB4;
+	color:#FFF;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, .1) inset;
+
+}
+
+.mainForm .switchTab label:first-child span {
+	border-radius:2px 0px 0px 2px;
+}
+
+
+.mainForm .switchTab label:last-child span {
+	border-right:0px !important;
+	border-radius:0px 2px 2px 0px;
+}
+
+.addBtn {
+	position:absolute;
+	right:0px;
+	top:5px;
+	right:4px;
+}

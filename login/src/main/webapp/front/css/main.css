@@ -1,0 +1,616 @@
+@charset "UTF-8";
+
+body,html {
+	width:100%;
+	height:100%;
+	overflow:hidden;
+}
+
+#wrap {
+	width:100%;
+	height:100%;
+}
+
+.hideMainMenu #leftMenuArea {
+	width:20px;
+	transition:width .08s;
+}
+
+.hideMainMenu #leftMenuArea .leftMenuWrap {
+	opacity:0;
+	transition:opacity .5s;
+}
+
+.hideMainMenu #mainContentArea {
+	width:calc(100% - 20px);
+	transition:width .08s;
+}
+
+#leftMenuArea {
+	float:left;
+	width:270px;
+	height:calc(100% - 30px);
+	background-color:#212C35;
+	transition:width .08s;
+}
+
+.leftMenuWrap {
+	position:relative;
+	height:100%;
+	width:270px;
+	opacity:1;
+	transition:opacity .5s;
+
+}
+
+.logoArea {
+	height:80px;
+	background:url(/front/common/img/logo_kmos.png) center no-repeat;
+}
+
+.calendarArea {
+	height:210px;
+	margin:0px 5px;
+	border-radius:5px;
+	background-color:rgba(255,255,255,.05);
+}
+
+.mainMenuArea {
+	position:relative;
+	height:70px;
+	border-bottom:1px solid rgba(255,255,255,0.03);
+	box-shadow: -2px 2px 2px rgba(0,0,0,.05);
+	background:rgba(21,27,32,.5);
+}
+
+.mainMenuArea h1 {
+	position:relative;
+	padding-left:10px;
+	display:inline-block;
+	color:#FFF;	
+	font-family:'NotoSansKR',Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif;
+	font-weight:500;
+	letter-spacing:-1px;
+	font-size:19px;
+	width:100%;
+	height:70px;
+	padding-top:10px;
+	cursor:pointer;
+}
+
+.mainMenuArea:hover h1 {
+	color:#5cc4e9;
+	background-color:rgba(0,0,0,.1);
+	transition:background-color .3s,color .3s;
+}
+
+.mainMenuArea .menuName {
+	display:inline-block;
+	padding-top:10px;
+}
+
+.mainMenuArea h1 img {
+	background-color:#0077a6;
+	padding:5px;
+	width:34px;
+	height:34px;
+	margin-right:7px;
+	border-radius:3px;
+}
+
+.mainMenuArea h1:hover span.arrow {
+	opacity:1;
+}
+
+.mainMenuArea:hover span.menuName img {
+	background-color:#005c80;
+	transition:background-color .5s;
+}
+
+.mainMenuArea h1 span.arrow {
+	position: absolute;
+	top:30px;
+	right:15px !important;
+	opacity:.5;
+}
+
+.menuDropDown {
+	display:none;
+	position:absolute;
+	z-index:100;
+	top:70px;
+	background:#141B21;
+	width:100%;
+}
+
+.menuDropDown ul {
+	height:45px;
+	line-height:45px;
+	padding-left:15px;
+	color:#FFF;	
+	font-family:'NotoSansKR',Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif;
+	font-weight:500;
+	letter-spacing:-1px;
+	font-size:15px;
+	cursor:pointer;
+}
+
+.menuDropDown ul img {
+	vertical-align:middle;
+	width:20px;
+	height:20px;
+	opacity:.9;
+	margin-top:-3px;
+	margin-right:3px;
+}
+
+.menuDropDown ul:hover {
+	color:#5cc4e9;
+	background-color:rgba(0,0,0,.1);
+	transition:background-color .3s,color .3s;
+}
+
+.menuDropDown ul:hover img {
+	opacity:.7;
+	filter: invert(51%) sepia(78%) saturate(3256%) hue-rotate(162deg) brightness(95%) contrast(101%);
+}
+
+.subMenuArea {
+	margin-top:5px;
+	height:calc(100% - 390px);
+	overflow-y:hidden;
+}
+
+#mainContentArea {
+	position:relative;
+	float:left;
+	width:calc(100% - 270px);
+	height:calc(100% - 30px);
+	background-color:#FFF;
+	transition:width .08s;
+}
+
+#mainStatusArea {
+	clear:both;
+	position:relative;
+	z-index:11;
+	height:30px;
+	background-color:#E9ECF2;	
+}
+
+.subMenuArea .subMenuInner {
+	padding:10px;
+}
+
+.subMenuArea .subMenu {
+	position:relative;
+	color:rgba(255,255,255,0.9);
+/*	font-family:Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif;
+	font-weight:bold;
+	font-size:12px; */
+
+	font-family:'NotoSansKR',Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif;
+	font-weight:300;
+	font-size:13px;
+	height:40px;
+	line-height:40px;
+	cursor:pointer;
+	padding-left:10px;
+}
+
+.subMenuArea .subMenu:hover {
+	background-color:rgba(0,0,0,.1);
+	color:#5cc4e9;
+}
+
+.subMenuArea .childArea {
+	display:none;
+	margin-bottom:5px;
+}
+
+.subMenuArea .childArea .subMenu {
+	font-weight:100;
+	font-size:12px;
+}
+
+.subMenuArea .subMenu .arrow {
+	position: absolute;
+	top:16px;
+	right:7px !important;
+	opacity:.5;
+}
+
+.subMenuArea .subMenu:hover span.arrow {
+	opacity:1;
+}
+
+
+.subMenuArea .subMenu.active .arrow {
+	top:19px;
+}
+
+.subMenuArea .subMenuIcon {
+	display:inline-block;
+	width:18px;
+	height:16px;
+	background-image:url(/front/common/img/icon/main_icons.png);
+	background-position:-49px 0px;
+	vertical-align:middle;
+	margin-right:3px;
+	margin-top:-4px;
+}
+
+.subMenuArea .subMenuIcon.open {
+	background-position:-31px 0px !important;
+}
+
+.subMenuArea .subMenu.child .subMenuIcon {
+	background-position:-13px 0px;
+}
+
+
+.subMenuArea.scrollbar-inner > .scroll-element.scroll-y {
+	width:3px !important;
+}
+
+.subMenuArea.scroll-element_outer {
+	border-radius:3px !important;
+}
+
+.subMenuArea .scroll-element_track {
+	background-color:transparent !important;
+}
+
+.subMenuArea .scroll-bar {
+	background-color:rgba(255,255,255,.4) !important;
+	opacity:1 !important;
+}
+
+.menuSetup {
+	display:none;
+	height:20px;
+	text-align:center;
+	color:#FFF;
+}
+
+#mainHistoryArea {
+	height:30px;
+	background-color:#E9ECF2;
+	font-size:0px;
+	box-shadow: inset 0px -1px 2px rgba(0,0,0,.05);
+}
+
+#mainHistoryArea .tab {
+	display:inline-block;
+	width:200px;
+	text-align:center;
+	line-height:30px;
+	height:30px;
+	background-color:transparent;
+	font-size:12px;
+	max-width:300px;
+	min-width:100px;
+	cursor:pointer;
+}
+
+#mainHistoryArea .tab:hover {
+	background-color:rgba(0,0,0,.04);
+}
+
+#mainHistoryArea .tab span {
+	display:inline-block;
+	width:100%;
+	height:15px;
+	line-height:15px;
+	border-right:1px solid #CACACA;
+}
+
+
+#mainHistoryArea .tab.on {
+	background-color:#FFF;
+	border-bottom:none;
+	line-height:30px;
+	height:30px;
+}
+
+#mainHistoryArea .tab span ~ #mainHistoryArea .tab.on span {
+  color: blue;
+}
+
+#mainHistoryArea .tab.on span {
+	border-right:none;
+}
+
+#mainTitleArea {
+	position:relative;
+	height:50px;
+	border-bottom:1px solid #EAEAEA;
+}
+
+#mainTitleArea h1 {
+	position:relative;
+	color:#007aa5;
+	font-weight:bold;
+	font-size:13px;
+	height:50px;
+	line-height:50px;
+	margin-left:10px;
+}
+
+#mainTitleArea h1 .naviParent {
+	color:#666;
+	display:inline-block;
+	font-weight:500;
+	padding-right:10px;
+	margin-right:5px;
+	font-size:12px;
+	background:url(/front/common/img/icon/arrow_right.png) right center no-repeat;
+}
+
+#mainTitleArea h1 img {
+	width:18px;
+	height:18px;
+	margin-bottom:1px;
+	margin-right:3px;
+	opacity:.7;
+	filter: invert(78%) sepia(0%) saturate(0%) hue-rotate(150deg) brightness(88%) contrast(88%);
+}
+
+#mainTitleArea h1 span.listCountInfo {
+	font-weight:normal;
+	color:#666;
+	margin-left:10px;
+}
+
+#mainTitleArea .searchButtonArea {
+	position:absolute;
+	right:0px;
+	top:0px;
+	vertical-align:middle;
+	height:50px;
+	line-height:48px;
+	padding-right:7px;
+}
+
+#mainTitleArea .searchButtonArea button.btn img {
+	margin-top:-3px;
+}
+
+#mainTitleArea .searchButtonArea button.btn.large {
+}
+
+#mainTitleArea .searchButtonArea button.btn.middle {
+}
+
+
+.mainContent {
+	height:calc(100% - 80px);
+}
+
+.mainContent.scrollbar-inner > .scroll-element.scroll-y {
+	width:5px !important;
+	height:calc(100% - 10px);
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+.mainContent.scroll-element_outer {
+	border-radius:5px !important;
+}
+
+.mainContent .scroll-element_track {
+	background-color:transparent !important;
+}
+
+.mainContent.scrollbar-inner > .scroll-element .scroll-element_track {
+	background-color:#E0E0E0 !important;
+}
+.mainContent.scrollbar-inner > .scroll-element .scroll-bar {
+	background-color:#666 !important;
+}
+
+.calendarArea .ui-datepicker {
+	width:100%;
+}
+
+.calendarArea .ui-widget-content {
+	background:transparent;
+	border:none !important;
+}
+
+.calendarArea .ui-state-default, 
+.calendarArea .ui-widget-content .ui-state-default, 
+.calendarArea .ui-widget-header .ui-state-default, 
+.calendarArea .ui-button, 
+.calendarArea .ui-button.ui-state-disabled:hover, 
+.calendarArea .ui-button.ui-state-disabled:active {
+	background:transparent !important;
+	border:none !important;
+	color:rgba(255,255,255,.7) !important;
+	font-size:11px !important;
+	text-align:center !important;
+	font-family:'NotoSansKR',Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif !important;
+	font-weight:300 !important;
+
+}
+
+.calendarArea .ui-datepicker th {
+	color:rgba(255,255,255,.7) !important;
+	font-size:11px !important;
+	text-align:center !important;
+	font-family:'NotoSansKR',Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif !important;
+	font-weight:300 !important;
+	background:rgba(0,0,0,.1) !important;
+}
+
+.calendarArea .ui-widget-header {
+	color:rgba(255,255,255,1) !important;
+	font-size:13px !important;
+	text-align:center !important;
+	font-family:'NotoSansKR',Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif !important;
+	font-weight:300 !important;
+	background:rgba(0,0,0,0) !important;
+	border:none !important;
+}
+.calendarArea .ui-datepicker-week-col {
+	color:rgba(255,255,255,.2) !important;
+	font-size:10px !important;
+	text-align:center !important;
+	font-family:'NotoSansKR',Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif !important;
+	font-weight:300 !important;
+}
+
+.calendarArea .ui-datepicker-prev.ui-state-hover,
+.calendarArea .ui-datepicker-next.ui-state-hover {
+	background:transparent !important;
+	border:none !important;
+	cursor:pointer !important;
+}
+
+.calendarArea .ui-datepicker-prev .ui-icon {
+	background-image:url(/front/common/img/icon/main_icons.png) !important;
+	background-position:-65px 0px !important;
+	width:12px !important;
+	height:12px !important;
+	opacity:.5 !important;
+	margin-top:-5px !important;
+	vertical-align:middle !important;
+}
+
+.calendarArea .ui-datepicker-next .ui-icon {
+	background-image:url(/front/common/img/icon/main_icons.png) !important;
+	background-position:-80px 0px !important;
+	width:12px !important;
+	height:12px !important;
+	opacity:.5 !important;
+	margin-left:-2px !important;
+	margin-top:-5px !important;
+	vertical-align:middle !important;
+}
+
+.calendarArea .ui-datepicker .ui-datepicker-prev-hover, 
+.calendarArea .ui-datepicker .ui-datepicker-next-hover {
+	top:2px !important;
+}
+
+.calendarArea .ui-datepicker td {
+	padding:1px !important;
+}
+
+.calendarArea .ui-datepicker-calendar .ui-datepicker-week-end a,
+.calendarArea .ui-datepicker-calendar .ui-datepicker-week-end span{
+	color:#ffd5d5 !important;
+}
+
+#grid {
+	margin-top:-1px;
+}
+
+#mainHistoryArea .userInfo {
+	display:inline-block;
+	font-size:12px;
+	float:right;
+	line-height:30px;
+	padding-right:5px;
+	color:#666;
+}
+
+#mainHistoryArea .userInfo strong {
+	color:#4d575b;
+}
+
+#mainHistoryArea .userInfo a {
+	display:inline-block;
+	background:#88949a;
+	color:#FFF;
+	height:20px;
+	font-size:11px;
+	letter-spacing:-1px;
+	line-height:21px;
+	vertical-align:middle;
+	padding:0px 10px;
+	border-radius:10px;
+	margin-top:-2px;
+	cursor:pointer;
+}
+
+.menu-trigger,
+.menu-trigger span {
+	display: inline-block;
+	transition: all .2s;
+	box-sizing: border-box;
+}
+
+.menu-trigger {
+	position: relative;
+	margin-left:7px;
+	margin-top:7px;
+	width: 16px;
+	height: 14px;
+	cursor:pointer;
+}
+
+.menu-trigger span {
+	position: absolute;
+	left: 0;
+	width: 100%;
+	height: 2px;
+	background-color: #666;
+	border-radius: 4px;
+}
+
+.menu-trigger span:nth-of-type(1) {
+	top: 0;
+}
+
+.menu-trigger span:nth-of-type(2) {
+	top: 6px;
+}
+
+.menu-trigger span:nth-of-type(3) {
+	bottom: 0;
+}
+
+.menu-trigger span:nth-of-type(1),
+.menu-trigger span:nth-of-type(3) {
+	width:8px;
+}
+.menu-trigger span:nth-of-type(2) {
+}
+.menu-trigger span:nth-of-type(1) {
+	transform:translate(0px, 3px) rotate(-45deg);
+}
+.menu-trigger span:nth-of-type(3) {
+	transform:translate(0px, -3px) rotate(45deg);
+}
+
+.menu-trigger.active span:nth-of-type(1) {
+	transform: translateY(0px) rotate(0deg);
+}
+
+.menu-trigger.active span:nth-of-type(1),
+.menu-trigger.active span:nth-of-type(3) {
+	width:16px;
+}
+
+.menu-trigger.active span:nth-of-type(3) {
+	transform: translateY(0px) rotate(0deg);
+}
+
+
+.menu-trigger.active2 {
+	transform : rotate(90deg);
+}
+
+.menu-trigger.active1 span:nth-of-type(1),
+.menu-trigger.active1 span:nth-of-type(3) {
+	width:8px;
+}
+.menu-trigger.active1 span:nth-of-type(2) {
+}
+.menu-trigger.active1 span:nth-of-type(1) {
+	transform:translate(8px, 3px) rotate(45deg);
+}
+.menu-trigger.active1 span:nth-of-type(3) {
+	transform:translate(8px, -3px) rotate(-45deg);
+}

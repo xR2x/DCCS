@@ -1,0 +1,168 @@
+@charset "utf-8";
+.addBtn {
+	position:absolute;
+	right:0px;
+	top:5px;
+	right:4px;
+}
+
+#form1 {
+	border-left:1px solid #EAEAEA;
+}
+
+.tui-grid-scrollbar-left-bottom {
+	border-left:none !important;
+}
+
+.tui-grid-cell-has-input[data-column-name=assign] .tui-grid-cell-content {
+	padding:0px !important;
+	height:100%;
+}
+
+.asignHeader {
+	width:100%;
+	height:15px;
+	border-bottom:1px solid #F3F3F3;
+	background-color:#F9F9F9;
+	background-image:url(/front/master/routing/img/assign_title.png);
+	background-position:0px 1px;
+}
+
+.asignHeader span {
+	display:inline-block;
+	width:33%;
+	height:15px;
+	border-right:1px solid #F3F3F3;
+}
+
+.assignBody {
+	width:100%;
+	height:29px;
+	background-color:rgba(255,255,255,0.5);
+}
+
+.assignBody span {
+	display:inline-block;
+	width:33%;
+	height:29px;
+	cursor:pointer;
+	border-right:1px solid #F3F3F3;
+	background-image:url(/front/master/routing/img/assign_lamp.png);
+	background-position:-32px 0px;
+	background-repeat:no-repeat;
+}
+
+.assignBody span.on {
+	background-position:0px 0px;
+}
+
+
+.changeNoWrap {
+	position:relative;
+	border:1px solid #E0E0E0;
+	height:72px;
+	width:260px;
+	border-radius:3px;
+}
+
+.changeNoWrap .line {
+	height:36px;
+	line-height:36px;
+	font-size:11px;
+	font-weight:bold;
+	color:#666;
+	font-family:'NotoSansKR',Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif !important;
+	border-bottom:1px solid #E0E0E0;
+}
+
+.changeNoWrap .line:hover {
+	background-color:#F5FAFC;
+}
+
+.changeNoWrap .line span {
+	display:inline-block;
+	width:80px;
+	text-align:center;
+	background-color:rgba(100,100,100,.05);
+	border-right:1px solid #EFEFEF;
+	margin-right:5px;
+}
+
+.changeNoWrap .line:last-child {
+	border-bottom:none;
+}
+
+.changeNoWrap .line .btn {
+	position:absolute;
+	top:3px;
+	right:3px;
+	height:29px;
+	line-height:29px;
+}
+
+.allEffArea {
+	display:inline-block;
+	line-height:0px;
+	position:absolute;
+	right:10px;
+}
+
+.allEffArea .title {
+	display:inline-block;
+	height:40px;
+	line-height:40px;
+	font-size:11px;	
+	vertical-align:middle;
+	margin-right:10px;
+}
+
+.allEffArea .inputWrap {	
+	height:40px;
+	width:60px;
+	position:relative;
+	display:inline-block;
+	vertical-align:middle;
+	padding-top:2px;
+}
+
+.allEffArea .inputWrap .switchWrap {
+	height:30px;
+	background-color:#313e46;
+	box-shadow: inset 0 -1px #576a76, inset 0 1px 1px rgb(0 0 0 / 5%);
+	background-image:linear-gradient(to bottom, #182026, #638399 25px);
+}
+.allEffArea .inputWrap .switchLabel {
+	height:24px;
+}
+
+.allEffArea .inputWrap .switchLabel:after {
+	width: calc(100% - 30px);
+}
+
+.allEffArea .inputWrap .switchLabel:before {
+	width: calc(100% - 25px);
+}
+
+.tui-grid-cell[data-column-name=tvEff] strong {
+	display:block;
+	margin-bottom:3px;
+	border-radius:8px;
+	color:#FFF;
+	font-size:11px;
+	padding:2px 0px;
+	background-color:#AAA;
+}
+
+.tui-grid-cell[data-column-name=tvEff] span {
+	font-family:tahoma;
+	font-size:10px;
+	color:#AAA;
+}
+
+.tui-grid-cell.changeNoActive strong {
+	background-color:#0d608c;
+}
+
+.tui-grid-cell.changeNoActive span {
+	color:#666;
+}              

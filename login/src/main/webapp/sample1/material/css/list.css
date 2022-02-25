@@ -1,0 +1,12 @@
+@charset "utf-8";
+
+.tui-grid-cell-content .btn {
+	padding:0px 8px;
+}
+
+button.btn.disable {
+	border: 1px solid #DADADA !important;
+	background-color: #FAFAFA !important;
+	color: #CCC !important;
+	text-shadow: 0 1px 0 rgba(255,255,255, .9) !important;
+}

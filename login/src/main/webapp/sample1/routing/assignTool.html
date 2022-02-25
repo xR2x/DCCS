@@ -1,0 +1,53 @@
+<!doctype html> 
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="robots" content="index,nofollow"/>
+<title>Front</title>
+<link rel="stylesheet" href="/front/common/css/style.css">
+<link rel="stylesheet" href="/front/common/css/ui.css">
+<link rel="stylesheet" href="/front/common/css/font.css">
+<link rel="stylesheet" href="/front/common/css/button.css">
+<link rel="stylesheet" href="/front/common/css/jquery.scrollbar.css">
+<link rel="stylesheet" href="/front/common/css/jquery-ui.min.css">
+<link rel="stylesheet" href="/front/common/css/jquery.toast.css">
+<link rel="stylesheet" href="/front/common/css/ui.create.css">
+<link rel="stylesheet" href="/front/common/css/tui-grid.css">
+<link rel="stylesheet" href="/front/master/routing/css/assignTool.css">
+<script type="text/javascript" src="/front/common/js/tui-grid.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.scrollbar.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.toast.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.popup.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.create.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.form.js"></script>
+<script type="text/javascript" src="/front/common/js/common.js"></script>
+<script type="text/javascript" src="/front/master/routing/js/assignTool.js"></script>
+</head>
+<body>
+	<div class="mainForm">
+		<div style="clear:both;">
+			<h1 class="divisionTitle" target="form1">Tool Assign 정보</h1>
+			<div id="form1" class="listForm"></div>  
+			<div class="hideArea">
+				<div class="info">아래의 Tool을 드래그&드롭으로 공정에 배치할 수 있습니다.<span class="dragInfo"><span class="on">배치</span><span class="off">제거</span></span></div>
+				<h1 class="title" target="form2">Tool 정보
+					<div class="inputWrap">
+						<div style="position: relative;">
+							<input type="text" id="height" autocomplete="off" size="40" placeholder="Tool No 검색">
+							<div class="underline"></div>
+						</div>
+					</div>				
+				</h1>
+				<div id="form2" class="listForm"></div>
+			</div>
+		</div>
+	</div>
+	<div class="btn-area hideArea"><div class="btn-group"><button class="btn xlarge color blue save" onclick="base.save()">저장하기</button><button class="btn xlarge close" onclick="parent.popup.close()">취소</button></div></div>
+</body>
+</html>

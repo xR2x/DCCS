@@ -1,0 +1,335 @@
+.fuFileUploadArea {
+	position:relative;
+	height:100%;
+}
+
+.fuFileUploadArea .btn {
+	padding:0px;
+}
+
+.fuButtonArea {
+	height:35px;
+	line-height:35px;
+}
+
+.fuFileUploadArea label.fuButtonLabel {
+	margin:0px;
+	padding:0px 10px;
+	display:block !important;
+	cursor:pointer;
+	color:#666;
+	font-size:11px;
+	vertical-align:middle;
+	width:100% !important;
+	height:100% !important;
+}
+
+.fuFileUploadArea .totalInfo {
+	position:absolute;
+	right:0px;
+	top:5px;
+	height:35px;
+	line-height:35px;
+	color:#999;
+	font-size:11px;
+}
+
+.fuFileUploadArea div.title {
+	height:30px;
+	line-height:30px;
+	font-size:11px;
+	color:#888;
+	letter-spacing:-1px;
+}
+
+div.fuWrap {
+	border:1px solid #EAEAEA;
+	height:calc(100% - 40px);
+}
+
+div.fuWrap.view {
+	border-radius:3px;
+}
+
+div.fuWrap.hover {
+	border:1px solid #498DB6 !important;
+	background:#F8FCFF !important;
+}
+
+div.fuFilelist {
+	overflow-y:scroll;
+	overflow-x:hidden;
+	height:86px;
+	position:relative;
+}
+
+.fuFilelist_title {
+	height:20px;
+	border:1px solid #EAEAEA;
+	border-bottom:none;
+	border-radius:5px 5px 0px 0px;
+	background:#FAFAFA;
+}
+
+div.fuFilelist ul.fileul {
+	position:relative;
+	display:none;
+	height:28px;
+	line-height:28px;
+	border-bottom:1px solid #F5F5F5;
+	padding-left:10px;
+	cursor:pointer;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+}
+
+div.fuFilelist ul.fileul.icon {
+	float:left;
+	border:1px solid #EAEAEA;
+	padding:5px;
+	margin:5px 0px 0px 5px;
+	border-radius:5px;
+	color:#888;
+}
+
+div.fuFilelist ul.fileul.icon:after {
+	display:block;
+	clear:both;
+	content:' ';
+}
+
+.fuFileUploadArea label.checkbox_label {
+	display:inline-block;
+	font-size:12px;
+	letter-spacing:0px;
+	cursor:pointer;
+	padding-top:2px;
+	line-height:20px;
+}
+
+.fuFileUploadArea label.checkbox_label input[type=checkbox] {
+  visibility: hidden;
+  position: absolute;
+}
+
+.fuFileUploadArea label.checkbox_label input[type=checkbox] + span {
+	vertical-align:middle;
+	display:inline-block;
+	margin-top:0px;
+	margin-right:3px;
+	height:20px !important;
+	width:13px;
+	cursor:pointer;
+	background:url(/view/core/img/icon/ui-check-box-uncheck.png) left center no-repeat;
+}
+
+.fuFileUploadArea label.checkbox_label input[type=checkbox]:checked + span{
+	color:#333;
+	background:url(/view/core/img/icon/ui-check-box-blue.png) left center no-repeat;
+}
+
+.fuPreviewWrap {
+	display:inline-block;
+	width:100px;
+	height:100%;
+	vertical-align:top;
+	padding:5px;
+	border-right:1px dotted #DADADA;
+}
+
+.previewTitle {
+	color:#666;
+	font-size:11px;
+	text-align:center;
+	height:20px;
+	line-height:20px;
+}
+
+.fuPreviewWrap .photoArea {
+	border:1px solid #EAEAEA;
+	width:100%;
+	height:90px;
+	background-position:center;
+	background-repeat:no-repeat;
+	background-size:100px;
+	opacity:1;
+}
+
+.fuPreviewWrap .photoArea.loadingPhoto {
+	background-image:url('data:image/gif;base64,R0lGODlhDgAOAPcFAP///+/v797e3r29vTHOAP///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFBQAFACwAAAAADgAOAAAIRQALCBwIAMDAgwgLIhwYIIBAhQUGDDjY0KFCiRMpOhwocaHHgwJCCliIcYDIkQhLflzZkWNGlxM7YjzYsubLlDc/tjwYEAAh+QQFBQAFACwAAAAADAAIAAAILQALCBwYIMDAgwQNIhQgQGBBgQAACGTY8GFEiRMbDoyIsKPAASAHeCwQUqTHgAAh+QQFBQAFACwCAAAADAAIAAAILQALCCwgQMDAgwMLIiwwYIBAhQUCBBDY0KFCiRMpOhwocaHHjwIBiATwcSSAgAAh+QQFBQAFACwGAAAACAAMAAAILAAHDChAsKDAggYHFhAggOBBhg0RMkRIsWKAiwEQYsxYESEAABU/gqT4kWBAACH5BAUFAAUALAYAAgAIAAwAAAgvAAsILDBgwECBBQ0eLHiwoUMBEAUcjCjR4cEAAQYCAFAAY8YCGwViFBiyYcmDAQEAIfkEBQUABQAsAgAGAAwACAAACC8ACwgcKHCAwQEECR5EmLBhAQAACAoQMBBixAABCkyk+DBiAYwCJzYE6VAgSYIBAQAh+QQFBQAFACwAAAYADAAIAAAILQABCARQoKDBggMJHlzIsGGAAAcHDDD4EKIAAQUkTizwsODFghIZfmzoEaPBgAAh+QQJBQAFACwAAAIACAAMAAAILAALFAAAQKDBgQQPCkyoUGGAhwEOQozYsGIBAQIUYsw4YIBAjAI7NhSpsGNAADs=') !important;
+	background-size:14px;
+	opacity:.5 !important;
+}
+
+.fuPreviewWrap + .fuFilelistWrap {
+	display:inline-block;
+	width:calc(100% - 100px);
+	vertical-align:middle;
+}
+
+div.fuFilelist ul.fileul.reject {
+}
+
+div.fuFilelist ul.fileul.reject * {
+	text-decoration:line-through !important;
+	color:#AAA;
+}
+
+div.fuFilelist ul.fileul.reject u.progressBar {
+}
+
+div.fuFilelist ul.fileul.reject u.progressBar u {
+	width:36px;
+	background:#A92121
+}
+
+div.fuFilelist ul.fileul.reject u.progressBar font {
+	width:36px;
+	text-align:center;
+	text-decoration:none !important;
+	color:#FFF;
+}
+
+div.fuFilelist ul.fileul u.filesize {
+	font-size:11px;
+	color:#AAA;
+	margin-right:10px;
+	text-decoration:none;
+	text-align:right;
+	float:right;
+}
+
+div.fuFilelist.view ul.fileul u.filesize {
+	float:right;
+	margin-right:5px;
+}
+
+div.fuFilelist ul.fileul:hover {
+	background:#FAFAFA
+}
+
+div.fuFilelist ul.fileul img.fileDelete {
+	margin-right:5px;
+	margin-top:-1px;
+}
+
+div.fuFilelist ul.fileul u.progressBar {
+	position:relative;
+	vertical-align:middle;
+	display:inline-block;
+	width:40px;
+	height:17px;
+	padding:1px;
+	border:1px solid #EAEAEA;
+	border-radius:5px;
+	float:right;
+	margin-top:5px;
+	margin-right:5px;
+}
+
+div.fuFilelist ul.fileul strong.filename {
+	display:inline-block;
+	width:calc(100% - 80px) !important;
+	font-weight:normal;
+	overflow:hidden;
+	white-space:nowrap;
+	text-overflow:ellipsis;
+	vertical-align:middle;
+}
+
+div.fuFilelist ul.fileul u.progressBar font {
+	position:absolute;
+	width:40px;
+	height:15px;
+	line-height:15px;
+	text-align:center;
+	font-family:tahoma;
+	font-size:9px;
+	top:0px;
+	z-index:1;
+}
+
+div.fuFilelist ul.fileul u.progressBar font.done {
+	color:#FFF;
+}
+
+div.fuFilelist ul.fileul u.progressBar font.wait {
+	margin-left:-2px;
+	color:#FFF;
+}
+
+
+div.fuFilelist ul.fileul u.progressBar u {
+	position:absolute;
+	z-index:0;
+	display:inline-block;
+	background:#CACACA;
+	height:13px;
+	border-radius:4px;
+	text-decoration:none;
+	background-image: -webkit-linear-gradient(rgba(255,255,255,0), rgba(0,0,0,.02));
+	background-image: linear-gradient(rgba(255,255,255,0), rgba(0,0,0,.02));
+}
+
+div.fuFilelist ul.fileul u.progressBar u.done {
+	width:36px;
+	background:#7bd339;
+}
+
+div.fuFilelist ul.fileul u.progressBar u.wait {
+	width:36px;
+	background:#999;
+}
+
+div.fuFilelist .filement {
+	text-align:center;
+	color:#AAA;
+	letter-spacing:-1px;
+	font-size:11px;
+}
+
+div.fuFilelist .filement img {
+	vertical-align:middle;
+	margin-top:-3px;
+}
+
+input.fuFile {
+	width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+.fileSizeArea {
+	font-weight:bold;
+	color:#FF6600;
+}
+
+.fuFilelist.scrollbar-inner > .scroll-element.scroll-y {
+	width:5px !important;
+	height:calc(100% - 10px);
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+.fuFilelist .scroll-element_outer {
+	border-radius:5px !important;
+}
+
+.fuFilelist .scroll-element_track {
+	background-color:transparent !important;
+}
+
+.fuFilelist.scrollbar-inner > .scroll-element .scroll-element_track {
+	background-color:#E0E0E0 !important;
+}
+.fuFilelist.scrollbar-inner > .scroll-element .scroll-bar {
+	background-color:#666 !important;
+}
+
+.fuFilelist.scrollbar-inner > .scroll-element.scroll-x {
+	display:none;
+}

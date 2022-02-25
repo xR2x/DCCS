@@ -1,0 +1,75 @@
+<!doctype html> 
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="robots" content="index,nofollow"/>
+<title>Front</title>
+<link rel="stylesheet" href="/front/common/css/style.css">
+<link rel="stylesheet" href="/front/common/css/ui.css">
+<link rel="stylesheet" href="/front/common/css/font.css">
+<link rel="stylesheet" href="/front/common/css/button.css">
+<link rel="stylesheet" href="/front/common/css/jquery.scrollbar.css">
+<link rel="stylesheet" href="/front/common/css/jquery-ui.min.css">
+<link rel="stylesheet" href="/front/common/css/jquery.toast.css">
+<link rel="stylesheet" href="/front/common/css/ui.create.css">
+<link rel="stylesheet" href="/front/master/routing/css/routingRejectInfo.css">
+<script type="text/javascript" src="/front/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.scrollbar.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.toast.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.popup.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.js"></script>
+<script type="text/javascript" src="/front/common/js/common.js"></script>
+<script type="text/javascript" src="/front/master/routing/js/routingRejectInfo.js"></script>
+</head>
+<body>
+	<div class="mainForm">
+		<div style="float:left;width:60%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">Material</label>
+			<div class="inputWrap">				
+				<input type="text" id="material" autocomplete="off" readonly title="Material">
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="float:left;width:20%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;padding-right:10px;">
+			<label class="inputTitle">Plant</label>
+			<div class="inputWrap">
+				<input type="text" id="plant" autocomplete="off" readonly title="Plant">
+				<div class="underline"></div>
+			</div>
+		</div>    
+		<div style="float:left;width:20%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">Revision</label>
+			<div class="inputWrap">
+				<input type="text" id="revision" autocomplete="off" readonly title="Revision">
+				<div class="underline"></div>
+			</div>
+		</div>    
+		<div style="float:left;width:50%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">처리자</label>
+			<div class="inputWrap">				
+				<input type="text" id="creator_name" autocomplete="off" readonly title="Material">
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="float:left;width:50%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">처리일</label>
+			<div class="inputWrap">
+				<input type="text" id="create_date" autocomplete="off" readonly title="Plant">
+				<div class="underline"></div>
+			</div>
+		</div>    
+		<div style="clear:both;height:160px">
+			<label class="inputTitle">반려사유</label>
+			<div class="inputWrap">
+				<textarea id="remark" title="반려사유" readonly></textarea>
+				<div class="underline"></div>
+			</div>
+		</div>
+	</div>
+	<div class="btn-area"><button class="btn xlarge close" onclick="parent.popup.close()">닫기</button></div>
+</body>
+</html>

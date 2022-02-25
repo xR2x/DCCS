@@ -1,0 +1,98 @@
+<!doctype html> 
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="robots" content="index,nofollow"/>
+<title>Front</title>
+<link rel="stylesheet" href="/front/common/css/style.css">
+<link rel="stylesheet" href="/front/common/css/ui.css">
+<link rel="stylesheet" href="/front/common/css/font.css">
+<link rel="stylesheet" href="/front/common/css/button.css">
+<link rel="stylesheet" href="/front/common/css/jquery.scrollbar.css">
+<link rel="stylesheet" href="/front/common/css/jquery-ui.min.css">
+<link rel="stylesheet" href="/front/common/css/jquery.toast.css">
+<link rel="stylesheet" href="/front/common/css/ui.create.css">
+<link rel="stylesheet" href="/front/common/css/tui-grid.css">
+<link rel="stylesheet" href="/front/pop/closing/css/workerDetailView.css">
+<script type="text/javascript" src="/front/common/js/tui-grid.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.scrollbar.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.toast.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.popup.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.create.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.form.js"></script>
+<script type="text/javascript" src="/front/common/js/common.js"></script>
+<script type="text/javascript" src="/front/pop/closing/js/workerDetailView.js"></script>
+</head>
+<body>
+	<div class="mainForm">
+		<div style="float:left;width:14%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">기준일</label>
+			<div class="inputWrap">
+				<input type="text" id="target_date" autocomplete="off" readonly title="기준일">
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="float:left;width:14%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">작업자</label>
+			<div class="inputWrap">
+				<input type="text" id="worker_name" autocomplete="off" readonly title="작업자">
+				<div class="underline"></div>
+			</div>
+		</div>	
+		<div style="float:left;width:12%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">작업공수(분)</label>
+			<div class="inputWrap">
+				<input type="text" id="working_time" autocomplete="off" readonly title="작업공수(분)">
+				<div class="underline"></div>
+			</div>
+		</div>	
+		<div style="float:left;width:12%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">잔업작업공수(분)</label>
+			<div class="inputWrap">
+				<input type="text" id="over_working_time" autocomplete="off" readonly title="잔업작업공수(분)">
+				<div class="underline"></div>
+			</div>
+		</div>	
+		<div style="float:left;width:12%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">비가동공수(분)</label>
+			<div class="inputWrap">
+				<input type="text" id="loss_time" autocomplete="off" readonly title="비가동공수(분)">
+				<div class="underline"></div>
+			</div>
+		</div>	
+		<div style="float:left;width:12%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">잔업비가동공수(분)</label>
+			<div class="inputWrap">
+				<input type="text" id="over_loss_time" autocomplete="off" readonly title="잔업비가동공수(분)">
+				<div class="underline"></div>
+			</div>
+		</div>	
+		<div style="float:left;width:12%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">제외공수(분)</label>
+			<div class="inputWrap">
+				<input type="text" id="except_time" autocomplete="off" readonly title="제외공수(분)">
+				<div class="underline"></div>
+			</div>
+		</div>	                       
+		<div style="float:left;width:12%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">잔업제외공수(분)</label>
+			<div class="inputWrap">
+				<input type="text" id="over_except_time" autocomplete="off" readonly title="잔업제외공수(분)">
+				<div class="underline"></div>
+			</div>
+		</div>	                       
+		<div style="clear:both;">
+			<div class="mainForm">
+				<div id="grid" style="margin-top:-1px;border-left:1px solid #EAEAEA;"></div>
+			</div>
+		</div>
+	</div>
+	<div class="btn-area"><button class="btn xlarge close" onclick="parent.popup.close()">닫기</button></div>
+</body>
+</html>

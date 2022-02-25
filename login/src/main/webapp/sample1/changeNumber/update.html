@@ -1,0 +1,86 @@
+<!doctype html> 
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="robots" content="index,nofollow"/>
+<title>Front</title>
+<link rel="stylesheet" href="/front/common/css/style.css">
+<link rel="stylesheet" href="/front/common/css/ui.css">
+<link rel="stylesheet" href="/front/common/css/font.css">
+<link rel="stylesheet" href="/front/common/css/button.css">
+<link rel="stylesheet" href="/front/common/css/jquery.scrollbar.css">
+<link rel="stylesheet" href="/front/common/css/jquery-ui.min.css">
+<link rel="stylesheet" href="/front/common/css/jquery.toast.css">
+<link rel="stylesheet" href="/front/common/css/ui.create.css">
+<link rel="stylesheet" href="/front/master/changeNumber/css/update.css">
+<script type="text/javascript" src="/front/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.scrollbar.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.toast.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.popup.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.js"></script>
+<script type="text/javascript" src="/front/common/js/common.js"></script>
+<script type="text/javascript" src="/front/master/changeNumber/js/update.js"></script>
+</head>
+<body>
+	<div class="mainForm">
+		<div style="float:left;width:70%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle"><span class='must'>*</span>Material</label>
+			<div class="inputWrap">				
+				<input type="text" id="material" autocomplete="off" title="material" disabled>
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="float:left;width:30%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle"><span class='must'>*</span>Plant</label>
+			<div class="inputWrap">
+				<select class="customize" id="plant" title="Plant" disabled></select>
+				<div class="underline"></div>
+			</div>
+		</div>    
+		<div style="float:left;width:45%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle"><span class='must'>*</span>Type Version</label>
+			<div class="inputWrap">				
+				<select class="customize" id="tv" title="Type Version"></select>
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="float:left;width:20%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle"><span class='must'>*</span>Eff(From)</label>
+			<div class="inputWrap">
+				<input type="text" id="eff_from" autocomplete="off" title="Eff(From)" num="true" maxlength="5">
+				<div class="underline"></div>
+			</div>
+		</div> 
+		<div style="float:left;width:20%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle"><span class='must'>*</span>Eff(To)</label>
+			<div class="inputWrap">
+				<input type="text" id="eff_to" autocomplete="off" title="Eff(To)" num="true" maxlength="5">
+				<div class="underline"></div>
+			</div>
+		</div>                        
+		<div style="float:left;width:15%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle" style="text-align:center;">Last Eff</label>
+			<div class="inputWrap" style="padding-bottom:7px;">
+				<label class="switchWrap" style="width:66px;" onchange="base.lastEffChange(this);">
+					<input type="checkbox" id="last_flag" name="last_flag" class="switchInput" title="Last Eff" value="X">
+					<span class="switchLabel" dataon="ON" dataoff="OFF"></span>
+					<span class="switchHandle"></span>
+				</label>
+				<div class="underline"></div>
+			</div>
+		</div>   		                                          
+		<div style="clear:both;height:120px">
+			<label class="inputTitle">Remark</label>
+			<div class="inputWrap">
+				<textarea id="remark" title="Remark"></textarea>
+				<div class="underline"></div>
+			</div>
+		</div>
+	</div>
+	<div class="btn-area"><div class="btn-group"><button class="btn xlarge color blue save" onclick="base.modify()">수정하기</button><button class="btn xlarge close" onclick="parent.popup.close()">취소</button></div></div>
+</body>
+</html>

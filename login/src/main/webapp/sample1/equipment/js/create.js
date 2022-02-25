@@ -1,0 +1,58 @@
+var base = {
+	init:function(){
+		base.set();
+	},
+	set:function(){
+		createForm.set({
+			width:1000
+			,title:"장비 생성"
+			,divisionType:null
+			,service:"/master/equipment/create"
+			,beforeHandler:function(){
+				return true;
+			}
+			,afterHandler:function(json){
+				setTimeout(function(){
+					hash.set({"service":"master/equipment/list"});
+				},500);
+			},
+			data:[{
+				name:"기본정보"
+				,data:
+				[[
+					{
+						title:"장비코드"
+						,id:"equipment_code"
+						,type:"input"
+						,maxLength:10
+						,width:250
+						,must:true
+					},{
+						title:"장비명"
+						,id:"equipment_name"
+						,type:"input"
+						,width:550
+						,maxLength:40
+						,must:true
+					},{
+						title:"Spindle 수"
+						,id:"spindle"
+						,type:"input"
+						,width:150
+						,dataType:"int"
+						,must:true
+					}
+				],[
+					{
+						title:"Remark"
+						,id:"remark"
+						,type:"textarea"
+						,width:970
+						,height:100
+					}
+				]]
+			}
+		]});
+	}
+}
+$(document).ready(base.init);

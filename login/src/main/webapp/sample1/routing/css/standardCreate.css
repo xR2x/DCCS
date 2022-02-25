@@ -1,0 +1,62 @@
+@charset "utf-8";
+.addBtn {
+	position:absolute;
+	right:0px;
+	top:5px;
+	right:4px;
+}
+
+#form1 {
+	border-left:1px solid #EAEAEA;
+}
+
+.tui-grid-scrollbar-left-bottom {
+	border-left:none !important;
+}
+
+
+tr.tui-grid-row.hover .asignHeader {
+	background-color:#F2F2F2;
+}
+
+.tui-grid-cell-has-input[data-column-name=assign] .tui-grid-cell-content {
+	padding:0px !important;
+	height:100%;
+}
+
+.asignHeader {
+	width:100%;
+	height:15px;
+	border-bottom:1px solid #F3F3F3;
+	background-color:#F9F9F9;
+	background-image:url(/front/master/routing/img/assign_title.png);
+	background-position:0px 1px;
+}
+
+.asignHeader span {
+	display:inline-block;
+	width:33%;
+	height:15px;
+	border-right:1px solid #F3F3F3;
+}
+
+.assignBody {
+	width:100%;
+	height:29px;
+	background-color:rgba(255,255,255,0.5);
+}
+
+.assignBody span {
+	display:inline-block;
+	width:33%;
+	height:29px;
+	cursor:pointer;
+	border-right:1px solid #F3F3F3;
+	background-image:url(/front/master/routing/img/assign_lamp.png);
+	background-position:-32px 0px;
+	background-repeat:no-repeat;
+}
+
+.assignBody span.on {
+	background-position:0px 0px;
+}

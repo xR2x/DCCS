@@ -1,0 +1,207 @@
+.createWrap {
+	width:100%;
+	height:100%;
+	background-color:#f3f4f8;
+	padding:10px;
+}
+
+.createWrap .header {
+	position:relative;
+	width:1190px;
+    background-color: #fff;
+	border-radius: 3px;
+    box-shadow: 0 4px 4px rgb(87 100 126 / 21%);
+	height:60px;
+	margin-bottom:10px;
+	-ms-user-select: none; 
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.createWrap .header .workCenterArea {
+	width:420px;
+	height:60px;
+	line-height:60px;
+	padding-left:10px;
+	color:#666;
+	float:left;
+}
+
+.workCenterArea select {
+	margin-left:5px;
+	height:35px;
+	border-radius:3px;
+	width:150px;
+}
+
+#equipment {
+	display:none;
+}
+
+.createWrap .header .yearArea {
+	position:relative;
+	width:350px;
+	height:60px;
+	line-height:60px;
+	text-align:center;
+	float:left;
+}
+
+.yearArea .year {
+	display:inline-block;
+	vertical-align:middle;
+	font-family:'NotoSansKR',Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif;
+	font-size:30px;
+	font-weight:700;
+	color:rgba(28,42,53,.9) !important;
+	height:60px;
+	margin-top:-3px;
+}
+
+.yearArea .prevYear {
+	cursor:pointer;
+	display:inline-block;
+	vertical-align:middle;
+	width:22px;
+	height:60px;
+	margin-right:10px;
+	background-image:url('data:image/gif;base64,R0lGODlhLAAUAKIAAAAAAP///7y8vLu7u////wAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFAAAEACwAAAAALAAUAAADUUi63P4wyiXGJEPcraqeHjcNGVdZ4nOm5JdS5Ru+WEyvKU4rrdjvDJ1ECOTZIr8iDAUiKY2uyww4NTl3SdZVy6RlpVtqWPIVdyHlYuVyfLofCQA7');
+	background-repeat:no-repeat;
+	background-position:0px center;
+	opacity:.6;
+	transition:background-position .3s, opacity .3s;
+}
+
+.yearArea .prevYear:hover {
+	background-position:-5px center;
+	opacity:1;
+	transition:background-position .3s, opacity .3s;
+}
+
+.yearArea .nextYear {
+	cursor:pointer;
+	display:inline-block;
+	vertical-align:middle;
+	width:22px;
+	height:60px;
+	margin-left:10px;
+	background-image:url('data:image/gif;base64,R0lGODlhLAAUAKIAAAAAAP///7y8vLu7u////wAAAAAAAAAAACH/C05FVFNDQVBFMi4wAwEAAAAh+QQFAAAEACwAAAAALAAUAAADUUi63P4wyiXGJEPcraqeHjcNGVdZ4nOm5JdS5Ru+WEyvKU4rrdjvDJ1ECOTZIr8iDAUiKY2uyww4NTl3SdZVy6RlpVtqWPIVdyHlYuVyfLofCQA7');
+	background-repeat:no-repeat;
+	background-position:-23px center;
+	opacity:.6;
+	transition:background-position .3s, opacity .3s;
+}
+
+.yearArea .nextYear:hover {
+	background-position:-18px center;
+	opacity:1;
+	transition:background-position .3s, opacity .3s;
+}
+
+.createWrap .header .btnArea {
+	width:420px;
+	height:60px;
+	line-height:60px;
+	float:left;
+}
+
+
+
+.createWrap .ui-widget-content {
+	border:none !important;
+	background:none !important;
+}
+
+.createWrap .ui-datepicker-title {
+	font-family:'NotoSansKR',Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif;
+	font-size:14px;
+	font-weight:300;
+}
+
+.createWrap .ui-datepicker-year {
+	display:none;
+	margin-right:0px !important;
+}
+
+.createWrap .ui-datepicker-month {
+	margin-left:0px !important;
+}
+
+.createWrap .ui-datepicker-inline {
+	width:1200px !important;
+}
+
+.createWrap .ui-datepicker-header {
+	border-radius:3px 3px 0px 0px !important;
+}
+
+.createWrap .ui-datepicker-today,
+.createWrap .ui-datepicker-current-day {
+	background:#FFF !important;
+}
+
+.createWrap .ui-datepicker .ui-datepicker-calendar .ui-datepicker-today a {
+	color:#FAB243 !important;
+	font-weight:1000;
+}
+
+.createWrap .ui-datepicker-group {
+	width:calc(25% - 10px);
+    background-color: #fff;
+	border-radius: 3px;
+    box-shadow: 0 4px 4px rgb(87 100 126 / 21%);
+	margin-right:10px;
+	margin-bottom:10px;
+}
+
+.createWrap .ui-datepicker-group.ui-datepicker-group-last {
+	margin-right:0px;
+}
+
+.createWrap .ui-datepicker-prev {
+	display:none;
+}
+
+.createWrap .ui-datepicker-next {
+	display:none;
+}
+
+.createWrap .ui-datepicker td span,
+.createWrap .ui-datepicker td a {
+	padding:5px !important;
+}
+
+.createWrap table.ui-datepicker-calendar {
+	height:225px;
+}
+
+.createWrap .ui-datepicker td.day-holiday a,
+.createWrap .ui-datepicker td.day-sunday a,
+.createWrap .ui-datepicker td.day-saturday a{
+	display:inline-block;
+	width:100%;
+	text-align:center;
+	color:#FFF !important;
+	border-radius:3px;
+	background:#570909 !important;
+}
+
+.createWrap .ui-datepicker .disabled a{
+	opacity: .35;
+}
+
+.createWrap .ui-datepicker td.day-past a{
+	color:#CCC !important;
+}
+
+.createWrap .workDayInfo {
+	position:absolute;
+	right:20px;
+	color:#666;
+}
+
+.ui-datepicker .ui-datepicker-calendar .ui-datepicker-current-day a {
+	color:none !important;
+}

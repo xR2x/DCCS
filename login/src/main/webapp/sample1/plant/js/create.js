@@ -1,0 +1,47 @@
+var base = {
+	init:function(){
+		base.set();
+	},
+	set:function(){
+		createForm.set({
+			width:1000
+			,title:"Plant 생성"
+			,divisionType:null
+			,service:"/master/plant/create"
+			,beforeHandler:function(){
+				return true;
+			}
+			,afterHandler:function(json){
+				setTimeout(function(){
+					hash.set({"service":"master/plant/list"});
+				},500);
+			},
+			data:[{
+				name:"기본정보"
+				,data:
+				[[
+					{
+						title:"Plant"
+						,id:"plant"
+						,type:"input"
+						,width:200
+						,dataType:"all"
+						,must:true
+						,maxLength:5
+						,upper:true
+					},
+					{
+						title:"Name"
+						,id:"plant_name"
+						,type:"input"
+						,width:760
+						,maxLength:100
+						,dataType:"all"
+						,must:true
+					}
+				]]
+			}
+		]});
+	}	
+}
+$(document).ready(base.init);

@@ -1,0 +1,54 @@
+<!doctype html> 
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="robots" content="index,nofollow"/>
+<title>Front</title>
+<link rel="stylesheet" href="/front/common/css/style.css">
+<link rel="stylesheet" href="/front/common/css/ui.css">
+<link rel="stylesheet" href="/front/common/css/font.css">
+<link rel="stylesheet" href="/front/common/css/button.css">
+<link rel="stylesheet" href="/front/common/css/jquery.scrollbar.css">
+<link rel="stylesheet" href="/front/common/css/jquery-ui.min.css">
+<link rel="stylesheet" href="/front/common/css/jquery.toast.css">
+<link rel="stylesheet" href="/front/common/css/ui.create.css">
+<link rel="stylesheet" href="/front/pop/report/css/workStop.css">
+<script type="text/javascript" src="/front/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.scrollbar.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.toast.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.popup.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.js"></script>
+<script type="text/javascript" src="/front/common/js/common.js"></script>
+<script type="text/javascript" src="/front/pop/report/js/workStop.js"></script>
+</head>
+<body>
+	<div class="mainForm">
+		<div style="float:left;width:70%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">SO</label>
+			<div class="inputWrap">
+				<input type="text" id="order_number" autocomplete="off" disabled title="SO">
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="float:left;width:30%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">GOP</label>
+			<div class="inputWrap">
+				<input type="text" id="gop" autocomplete="off" disabled title="GOP">
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="clear:both;height:100px">
+			<label class="inputTitle"><span class="must">*</span>중지사유</label>
+			<div class="inputWrap">
+				<textarea id="remark" title="중지사유"></textarea>
+				<div class="underline"></div>
+			</div>
+		</div>
+	</div>
+	<div class="btn-group"><button class="btn xlarge color blue save" onclick="base.save()">저장하기</button><button class="btn xlarge close" onclick="parent.popup.close()">취소</button></div>
+</body>
+</html>

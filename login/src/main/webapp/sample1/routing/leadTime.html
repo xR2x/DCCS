@@ -1,0 +1,83 @@
+<!doctype html> 
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="robots" content="index,nofollow"/>
+<title>Front</title>
+<link rel="stylesheet" href="/front/common/css/style.css">
+<link rel="stylesheet" href="/front/common/css/ui.css">
+<link rel="stylesheet" href="/front/common/css/font.css">
+<link rel="stylesheet" href="/front/common/css/button.css">
+<link rel="stylesheet" href="/front/common/css/jquery.scrollbar.css">
+<link rel="stylesheet" href="/front/common/css/jquery-ui.min.css">
+<link rel="stylesheet" href="/front/common/css/jquery.toast.css">
+<link rel="stylesheet" href="/front/common/css/ui.create.css">
+<link rel="stylesheet" href="/front/common/css/tui-grid.css">
+<link rel="stylesheet" href="/front/master/routing/css/leadTime.css">
+<script type="text/javascript" src="/front/common/js/tui-grid.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.scrollbar.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.toast.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.popup.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.create.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.form.js"></script>
+<script type="text/javascript" src="/front/common/js/common.js"></script>
+<script type="text/javascript" src="/front/master/routing/js/leadTime.js"></script>
+</head>
+<body>
+	<div class="mainForm">
+		<div style="float:left;width:40%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">Material</label>
+			<div class="inputWrap">
+				<input type="text" id="material" autocomplete="off" disabled title="Material">
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="float:left;width:30%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">GOP</label>
+			<div class="inputWrap">
+				<input type="text" id="gop" autocomplete="off" disabled title="GOP">
+				<div class="underline"></div>
+			</div>
+		</div>	
+		<div style="float:left;width:30%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">작업장</label>
+			<div class="inputWrap">
+				<input type="text" id="workcenter" autocomplete="off" disabled title="workcenter">
+				<div class="underline"></div>
+			</div>
+		</div>	                      
+		<div style="float:left;width:33%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">Setup(분)</label>
+			<div class="inputWrap">
+				<input type="text" id="setup" autocomplete="off" title="Setup" num="true">
+				<div class="underline"></div>
+			</div>
+		</div>                           
+		<div style="float:left;width:33%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">Run(분)</label>
+			<div class="inputWrap">
+				<input type="text" id="run" autocomplete="off" title="run" num="true">
+				<div class="underline"></div>
+			</div>
+		</div>                           
+		<div style="float:left;width:34%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">Remove(분)</label>
+			<div class="inputWrap">
+				<input type="text" id="remove" autocomplete="off" title="remove" num="true">
+				<div class="underline"></div>
+			</div>
+		</div>  
+		<div style="clear:both;">
+			<h1 class="divisionTitle" target="form1">장비목록</h1>
+			<div id="form1"></div>  
+		</div>
+	</div>
+	<div class="btn-area"><div class="btn-group"><button class="btn xlarge color blue save" onclick="base.save()">저장하기</button><button class="btn xlarge close" onclick="parent.popup.close()">취소</button></div></div>
+</body>
+</html>
