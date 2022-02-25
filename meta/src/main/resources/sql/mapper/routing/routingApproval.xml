@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.routing.RoutingApprovalMapper"> 
+
+	<sql id="routingRequestReadCondition">			
+		<if test="seq != null and seq != ''">
+			AND h.seq = ${seq}
+		</if>
+		<if test="material != null and material != ''">
+			AND h.material LIKE master.searchType(#{material})
+		</if>                                    
+		<if test="revision != null and revision != ''">
+			AND h.revision LIKE master.searchType(#{revision})
+		</if> 	
+		<if test="plant != null and plant != ''">
+			AND h.plant LIKE master.searchType(#{plant})
+		</if> 	      
+		<if test="project_code != null and project_code != ''">
+			AND h.project_code LIKE master.searchType(#{project_code})
+		</if>
+		<if test="status != null and status != ''">
+			<if test='status == "W"'>	
+				AND h.status IN ('Q', 'T')
+			</if>      
+			<if test='status != "W"'>	
+				AND h.status = #{status}
+			</if> 						
+		</if>
+		<if test="request_user_name != null and request_user_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = (SELECT creator FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'D')) LIKE master.searchType(#{request_user_name})
+		</if>
+		<if test="request_date != null and request_date != ''">
+			AND (SELECT create_date::date FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'D') = TO_DATE(#{request_date},'YYYY-MM-DD')
+		</if>
+		<if test="app_user_name != null and app_user_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = (SELECT creator FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'T')) LIKE master.searchType(#{app_user_name})
+		</if>
+		<if test="app_date != null and app_date != ''">
+			AND (SELECT create_date::date FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'T') = TO_DATE(#{app_date},'YYYY-MM-DD')
+		</if>
+		<if test="qa_user_name != null and qa_user_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = (SELECT creator FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'Q')) LIKE master.searchType(#{qa_user_name})
+		</if>
+		<if test="qa_date != null and qa_date != ''">
+			AND (SELECT create_date::date FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'Q') = TO_DATE(#{qa_date},'YYYY-MM-DD')
+		</if>
+	</sql>
+
+	<select id="routingRequestRead" resultType="java.util.HashMap">
+		SELECT 
+			h.seq
+			,h.material
+			,h.plant
+			,h.revision
+			,h.standard_flag
+			,h.general_note
+			,h.project_code
+			,(SELECT project_name FROM master.project WHERE company = h.company AND project_code = h.project_code) AS project_name
+			,h.status
+			,(SELECT code_name FROM master.common_code WHERE company IN ('COMMON',h.company) AND type = 'routing_status' AND code = h.status) AS status_name
+			,h.sequence_operation
+			,(SELECT COUNT(0) FROM master.routing WHERE routing_header_seq = h.seq AND deletion_flag is null) AS routing_count
+			,h.creator
+			,(SELECT "name" FROM master.user WHERE user_id = h.creator) AS creator_name
+			,to_char(h.create_date, 'YYYY-MM-DD HH24:MI') AS create_date	
+			,(SELECT seq FROM master.routing_header WHERE company = h.company AND material = h.material AND plant = h.plant AND deletion_flag IS NULL AND active_flag IS NULL AND seq <![CDATA[<]]> h.seq ORDER BY seq LIMIT 1) AS before_routing_no
+			,h.active_flag
+			,h.request_no
+			,(SELECT creator FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'D') AS request_user
+			,(SELECT "name" FROM master.user WHERE user_id = (SELECT creator FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'D')) AS request_user_name
+			,(SELECT to_char(create_date, 'YYYY-MM-DD HH24:MI') FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'D') AS request_date
+			,(SELECT creator FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'T') AS app_user
+			,(SELECT "name" FROM master.user WHERE user_id = (SELECT creator FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'T')) AS app_user_name
+			,(SELECT to_char(create_date, 'YYYY-MM-DD HH24:MI') FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'T') AS app_date			
+			,(SELECT creator FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'Q') AS qa_user
+			,(SELECT "name" FROM master.user WHERE user_id = (SELECT creator FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'Q')) AS qa_user_name
+			,(SELECT to_char(create_date, 'YYYY-MM-DD HH24:MI') FROM master.routing_approval_history WHERE request_no = r.request_no AND status = 'Q') AS qa_date						
+		FROM
+			master.routing_header h
+			INNER JOIN
+			master.routing_approval r
+			ON	h.company = r.company
+			AND h.seq = r.routing_header_seq
+			AND h.request_no = r.request_no
+		WHERE
+			h.company = #{company}					 
+		<include refid="routingRequestReadCondition" />
+		AND h.active_flag IS NOT NULL
+		AND h.status IN ('T', 'Q', 'R', 'A')
+		AND h.deletion_flag IS NULL		
+		AND h.request_no IS NOT NULL
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>					
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>	
+	</select>
+
+	<select id="routingRequestCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM
+			master.routing_header h
+			INNER JOIN
+			master.routing_approval r
+			ON	h.company = r.company
+			AND h.seq = r.routing_header_seq
+		WHERE
+			h.company = #{company}	
+		<include refid="routingRequestReadCondition" />		
+		AND h.active_flag IS NOT NULL
+		AND h.status IN ('T', 'Q', 'R', 'A')
+		AND h.deletion_flag IS NULL	
+		AND h.request_no IS NOT NULL
+	</select>  
+
+	<select id="routingApprovalHistory" resultType="java.util.HashMap">		
+		SELECT 
+			r.material
+			,r.plant
+			,r.revision
+			,h.status
+			,(SELECT code_name FROM master.common_code WHERE company IN ('COMMON',a.company) AND type = 'routing_approval_status' AND code = h.status) AS status_name	
+			,h.creator
+			,(SELECT "name" FROM master.user WHERE user_id = h.creator) AS creator_name	
+			,to_char(h.create_date, 'YYYY-MM-DD HH24:MI') AS create_date	
+			,h.remark
+		FROM 
+			master.routing_approval AS a
+			INNER JOIN
+			master.routing_approval_history AS  h
+			ON	a.request_no = h.request_no
+			INNER JOIN
+			master.routing_header AS r
+			ON 	a.company = r.company
+			AND a.routing_header_seq = r.seq
+		WHERE
+			a.company = #{company}
+		AND r.material = #{material}
+		AND r.plant = #{plant}
+		AND r.deletion_flag IS NULL
+		ORDER BY h.create_date DESC	
+	</select>
+
+	<select id="routingRejectInfo" resultType="java.util.HashMap">		
+		SELECT 
+			r.material
+			,r.plant
+			,r.revision
+			,r.status
+			,h.remark
+			,(SELECT "name" FROM master.user WHERE user_id = h.creator) AS creator_name	
+			,to_char(h.create_date, 'YYYY-MM-DD HH24:MI') AS create_date
+		FROM 
+			master.routing_approval AS a
+			INNER JOIN
+			master.routing_approval_history AS h
+			ON	a.request_no = h.request_no
+			INNER JOIN
+			master.routing_header AS r
+			ON a.company = r.company
+			AND a.routing_header_seq = r.seq	
+		WHERE
+			a.company = #{company} 
+		AND a.request_no = CAST(#{request_no} AS INT)
+		AND r.seq = CAST(#{seq} AS INT)
+		AND h.status = 'R'
+		AND r.deletion_flag is null
+	</select>
+
+	<select id="getRoutingStatus" resultType="java.util.HashMap">		
+		SELECT
+			code
+			,code_name	
+		FROM
+			master.common_code
+		WHERE
+			company in ('COMMON',#{company})
+		AND "type" = 'routing_status'
+		AND code IN ('Q','T','A','R')
+		AND deletion_flag IS NULL
+		ORDER BY sort
+	</select>
+			 
+	<update id="routingHeaderRevisionInactiveAll">
+		UPDATE 
+			master.routing_header
+		SET 
+			active_flag = NULL
+		WHERE
+			company	= #{company} 
+		AND material = (SELECT material FROM master.routing_header WHERE seq = CAST(#{seq} AS INT))
+		AND plant = (SELECT plant FROM master.routing_header WHERE seq = CAST(#{seq} AS INT))
+		AND active_flag IS NOT NULL
+	</update>
+
+	<select id="routingUserAuthCheck" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM 	
+			master.user_auth
+		WHERE
+			company = #{company} 
+		AND type = #{type} 
+		AND user_id = #{user_id} 
+		AND deletion_flag is null
+	</select>  
+	
+</mapper>

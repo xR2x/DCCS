@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.document.DocumentMapper"> 
+
+	<sql id="documentReadCondition">
+		<if test="seq != null and seq != ''">
+			AND seq = ${seq}
+		</if>
+		<if test="document_no != null and document_no != ''">
+			AND document_no LIKE master.searchType(#{document_no})
+		</if>                      
+		<if test="project_code != null and project_code != ''">
+			AND project_code LIKE master.searchType(#{project_code})
+		</if>
+		<if test="document_type != null and document_type != ''">
+			AND document_type LIKE master.searchType(#{document_type})
+		</if> 		   
+		<if test="revision != null and revision != ''">
+			AND revision LIKE master.searchType(#{revision})
+		</if> 	
+		<if test="sub_revision != null and sub_revision != ''">
+			AND sub_revision LIKE master.searchType(#{sub_revision})
+		</if> 		   
+		<if test="sheet != null and sheet != ''">
+			AND sheet LIKE master.searchType(#{sheet})
+		</if> 	 	   		
+		<if test="expiration_date != null and expiration_date != ''">
+			AND expiration_date = TO_DATE(#{expiration_date},'YYYY-MM-DD')
+		</if> 	 	   		          
+		<if test="document_name != null and document_name != ''">
+			AND document_name LIKE master.searchType(#{document_name})
+		</if> 
+		<if test="remark != null and remark != ''">
+			AND remark LIKE master.searchType(#{remark})
+		</if>
+		<if test="customer_revision != null and customer_revision != ''">
+			AND customer_revision LIKE master.searchType(#{customer_revision})
+		</if>
+		<if test="status != null and status != ''">
+			AND status = #{status}
+		</if>
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = d.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND d.create_date <![CDATA[>]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND d.create_date <![CDATA[<]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+		<if test="active_flag != null and active_flag != ''">
+			AND active_flag = #{active_flag}
+		</if>
+	</sql>
+
+	<select id="documentRead" resultType="java.util.HashMap">
+		SELECT 
+			seq
+			,company
+			,document_no
+			,project_code
+			,(SELECT project_name FROM master.project WHERE company = d.company AND project_code = d.project_code) AS project_name
+			,document_type
+			,(SELECT code_name FROM master.common_code WHERE company IN ('COMMON',d.company) AND type = 'document_type' AND code = d.document_type) AS document_type_name
+			,revision
+			,sub_revision
+			,sheet
+			,document_name
+			,customer_revision
+			,status
+			,TO_CHAR(expiration_date,'YYYY/MM/DD') AS expiration_date
+			,remark
+			,active_flag
+			,creator
+			,(SELECT "name" FROM master.user WHERE user_id = d.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI') AS create_date	 	
+			,(SELECT COUNT(*) FROM front.files WHERE company = d.company AND file_target_name = '/master/document/attach' AND file_target_seq = d.seq AND deletion_flag is null) AS file_count
+			,(		
+				SELECT 				
+					COUNT(0)
+				FROM 
+					master.routing_assign a,
+					json_array_elements(a.assign_value) AS b
+				WHERE	
+					a.company = d.company
+				AND a.assign_key = 'Doc'	
+				AND b.value ->> 'document_no' = d.document_no
+				AND b.value ->> 'document_type' = d.document_type
+				AND b.value ->> 'sheet' = d.sheet
+				AND b.value ->> 'revision' = d.revision
+				AND a.deletion_flag is null
+			) +  
+			(		
+				SELECT 				
+					COUNT(0)
+				FROM 
+					product.shop_order_routing_assign a,
+					json_array_elements(a.assign_value) AS b
+				WHERE	
+					a.company = d.company
+				AND a.assign_key = 'Doc'	
+				AND b.value ->> 'document_no' = d.document_no
+				AND b.value ->> 'document_type' = d.document_type
+				AND b.value ->> 'sheet' = d.sheet
+				AND b.value ->> 'revision' = d.revision
+				AND a.deletion_flag is null
+			) AS use_count	
+		FROM 
+			master.document d	
+		WHERE 
+			company = #{company}
+		<include refid="documentReadCondition" />
+		AND deletion_flag IS NULL
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>					  
+	</select>
+
+	<select id="documentCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM 
+			master.document d	
+		WHERE 
+			company = #{company}
+		<include refid="documentReadCondition" />			  
+		AND active_flag IS NOT NULL
+		AND deletion_flag IS NULL	
+	</select>  
+
+	<select id="getDocumentCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM 
+			master.document
+		WHERE 
+			company 			= #{company}
+		AND document_no			= #{document_no}	
+		AND document_type		= #{document_type}	
+		AND sheet				= #{sheet}		
+		AND revision			= #{revision}	
+		AND deletion_flag IS NULL	
+	</select>  
+
+	<select id="getDocumentDeleteCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM 
+			master.document
+		WHERE 
+			company 			= #{company}
+		AND document_no			= #{document_no}	
+		AND document_type		= #{document_type}	
+		AND sheet				= #{sheet}		
+		AND revision			= #{revision}	
+		AND deletion_flag IS NOT NULL	
+	</select>  
+  
+	<select id="documentCreate" resultType="int">							  
+		INSERT INTO master.document(
+			company
+			,document_no
+			,project_code
+			,document_type
+			,revision
+			,sub_revision
+			,sheet
+			,customer_revision
+			,status
+			,active_flag
+			,expiration_date
+			,document_name
+			,remark
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{document_no}
+			,#{project_code}
+			,#{document_type}
+			,#{revision}
+			,#{sub_revision}
+			,#{sheet}
+			,#{customer_revision}
+			,'A'
+			,'X'
+			,CAST(#{expiration_date} AS DATE)
+			,#{document_name}
+			,#{remark}
+			,#{user_id}
+			,NOW()
+		) RETURNING seq 
+	</select>
+
+	<update id="documentUpdate">
+		UPDATE 
+			master.document
+		SET
+			customer_revision	= #{customer_revision}
+			,expiration_date	= CAST(#{expiration_date} AS DATE)
+			,document_name		= #{document_name}
+			,remark				= #{remark}	
+			,project_code		= #{project_code}	
+			,active_flag		= 'X'
+			,deletion_flag		= null	
+		WHERE 
+			company 			= #{company}
+		AND document_no			= #{document_no}	
+		AND document_type		= #{document_type}	
+		AND sheet				= #{sheet}			
+		AND revision			= #{revision}			
+	</update>
+
+	<select id="getDocumentSeq" resultType="int">			
+		SELECT 
+			seq
+		FROM 
+			master.document
+		WHERE 
+			company 			= #{company}
+		AND document_no			= #{document_no}	
+		AND document_type		= #{document_type}	
+		AND sheet				= #{sheet}			
+		AND revision			= #{revision}			
+	</select>
+
+	<update id="documentDelete">
+		UPDATE 
+			master.document
+		SET
+			active_flag			= null
+			,deletion_flag		= 'X'	
+		WHERE 
+			company 			= #{company}
+		AND seq					= CAST(#{seq} AS INT)
+	</update>
+
+	<select id="documentRevisionCheck" resultType="int">
+		SELECT 
+			COUNT(0)
+		FROM 
+			master.document
+		WHERE 
+			company 			= #{company}
+		AND document_no			= #{document_no}	
+		AND document_type		= #{document_type}		
+		AND revision			= #{newRevision}	
+		AND sheet				= #{sheet}		
+		AND deletion_flag IS NULL
+	</select>
+
+	<select id="getDocumentUasbleCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM 
+			master.document d	
+		WHERE 
+			company = #{company}
+		AND document_no = #{document_no}	
+		AND document_type = #{document_type}	
+		AND sheet = #{sheet}				
+		AND deletion_flag IS NULL	
+	</select>  
+
+	<update id="documentActiveChange">
+		UPDATE 
+			master.document
+		SET
+			active_flag	= #{active_flag}
+		WHERE 
+			company = #{company}
+		AND seq	= CAST(#{seq} AS INT)
+	</update>
+
+	<select id="getBeforeDocumentSeq" resultType="int">
+		SELECT 	
+			COALESCE(MAX(seq), 0)
+		FROM 
+			master.document
+		WHERE
+			company = #{company} 
+		AND document_no	= #{document_no} 
+		AND document_type = #{document_type} 
+		AND sheet = #{sheet} 
+		AND seq <![CDATA[<]]> #{seq}::INT 
+		AND deletion_flag IS NULL
+	</select>
+
+
+	<update id="documentRevisionActiveChange">
+		UPDATE 
+			master.document
+		SET
+			active_flag	= #{active_flag}
+		WHERE 
+			company = #{company}
+		AND document_no = #{document_no}	
+		AND document_type = #{document_type}	
+		AND sheet = #{sheet}	
+		AND revision = #{revision}	
+	</update>
+  
+</mapper>

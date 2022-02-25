@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.shift.ShiftMapper"> 
+
+	<sql id="shiftReadCondition">
+		<if test="seq != null and seq != ''">
+			AND seq = ${seq}
+		</if> 
+		<if test="code != null and code != ''">
+			AND code LIKE master.searchType(#{code})
+		</if>           
+		<if test="name != null and name != ''">
+			AND "name" LIKE master.searchType(#{name})
+		</if>
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = s.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND s.create_date <![CDATA[>]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND s.create_date <![CDATA[<]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+	</sql>
+
+	<select id="shiftRead" resultType="java.util.HashMap">
+		SELECT
+			seq
+			,code
+			,"name"
+			,start_time
+			,end_time
+			,(SELECT "name" FROM master.user WHERE user_id = s.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI') AS create_date
+			,split_part(start_time,':',1) AS start_time1
+			,split_part(start_time,':',2) AS start_time2
+			,split_part(end_time,':',1) AS end_time1
+			,split_part(end_time,':',2) AS end_time2
+		FROM
+			master.shift s
+		WHERE
+			company = #{company}
+		<include refid="shiftReadCondition" />
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>					  
+	</select>
+
+	<select id="shiftCount" resultType="int">		  
+		SELECT 
+			COUNT(0) 
+		FROM
+			master.shift s
+		WHERE
+			company = #{company}
+		<include refid="shiftReadCondition" />			  
+	</select>  
+
+	<select id="getShiftCount" resultType="int">		  
+		SELECT 
+			COUNT(0) 
+		FROM
+			master.shift s
+		WHERE
+			company = #{company}
+		AND code	= #{code}
+	</select> 
+
+	<insert id="shiftCreate">							  
+		INSERT INTO master.shift(
+			company
+			,code
+			,"name"
+			,start_time
+			,end_time
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{code}
+			,#{name}
+			,concat(#{start_time1},':',#{start_time2})
+			,concat(#{end_time1},':',#{end_time2})
+			,#{user_id}
+			,NOW()
+		)
+	</insert>
+
+	<update id="shiftUpdate">
+		UPDATE 
+			master.shift
+		SET 
+			"name"		= #{name} 
+			,start_time	= concat(#{start_time1},':',#{start_time2})
+			,end_time	= concat(#{end_time1},':',#{end_time2})
+		WHERE 
+			company 	= #{company} 
+		AND code		= #{code} 
+	</update>
+
+	<delete id="shiftDelete">
+		DELETE FROM master.shift
+		WHERE
+			company = #{company} 
+		AND code 	= #{code} 	 
+	</delete>
+
+  
+  
+</mapper>

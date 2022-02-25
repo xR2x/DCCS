@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.project.ProjectMapper"> 
+
+	<sql id="projectReadCondition">
+		<if test="seq != null and seq != ''">
+			AND seq = ${seq}
+		</if>
+		<if test="project_code != null and project_code != ''">
+			AND project_code LIKE master.searchType(#{project_code})
+		</if> 		
+		<if test="project_name != null and project_name != ''">
+			AND project_name LIKE master.searchType(#{project_name})	
+		</if>
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = m.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND m.create_date <![CDATA[>]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND m.create_date <![CDATA[<]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+	</sql>
+
+	<select id="projectRead" resultType="java.util.HashMap">
+		SELECT
+			seq
+			,project_code
+			,project_name
+			,creator
+			,(SELECT name FROM master.user WHERE user_id = m.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI') AS create_date	
+			<if test="use_check != null and use_check != ''">
+				,((SELECT COUNT(0) FROM master.material_plant WHERE company = m.company AND project_code = m.project_code AND deletion_flag IS NULL) + (SELECT COUNT(0) FROM master.bom_header WHERE company = m.company AND project_code = m.project_code AND deletion_flag IS NULL) + (SELECT COUNT(0) FROM master.routing_header WHERE company = m.company AND project_code = m.project_code AND deletion_flag IS NULL)) AS use_count
+			</if>
+		FROM 
+			master.project m
+		WHERE
+			m.company = #{company}
+		<include refid="projectReadCondition" />
+		AND deletion_flag IS NULL
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>					  
+	</select>
+	
+	<select id="projectCount" resultType="int">		  
+		SELECT
+			COUNT(0)
+		FROM
+			master.project m
+		WHERE
+			company = #{company}
+		<include refid="projectReadCondition" />			  
+	</select>
+
+	<select id="getProjectCount" resultType="int">		  
+		SELECT
+			COUNT(0)
+		FROM
+			master.project m
+		WHERE
+			company			= #{company}
+		AND project_code	= UPPER(#{project_code})
+	</select>
+
+	<select id="getProjectDeleteCount" resultType="int">		  
+		SELECT
+			COUNT(0)
+		FROM
+			master.project m
+		WHERE
+			company			= #{company}
+		AND project_code	= UPPER(#{project_code})
+		AND deletion_flag is not null
+	</select>
+
+	<insert id="projectCreate">							  
+		INSERT INTO master.project  (
+			company
+			,project_code
+			,project_name
+			,creator
+			,create_date
+		)VALUES(
+			#{company}
+			,UPPER(#{project_code})
+			,#{project_name}
+			,#{user_id}
+			,NOW()
+		)
+	</insert>
+
+	<update id="projectUpdate">
+		UPDATE 	
+			master.project
+		SET 
+			project_name 	= #{project_name}
+			,deletion_flag	= null
+		WHERE
+			company			= #{company}
+		AND project_code 	= UPPER(#{project_code})
+	</update>
+
+	<update id="projectDelete">
+		UPDATE 	
+			master.project
+		SET 
+			deletion_flag	= 'X'
+		WHERE
+			company			= #{company}
+		AND project_code 	= UPPER(#{project_code})
+	</update>
+  
+</mapper>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.file.FileMapper"> 
+	<sql id="fileReadCondition">
+		<if test="attachTargetSeq != null and attachTargetSeq != ''">
+			AND f.file_target_seq = CAST(#{attachTargetSeq} AS INT)
+		</if>	  
+		<if test="file_target_seq != null and file_target_seq != ''">
+			AND f.file_target_seq = CAST(#{file_target_seq} AS INT)
+		</if>
+		<if test="file_target_name != null and file_target_name != ''">
+			AND f.file_target_name = #{file_target_name}
+		</if>
+		<if test="file_original_name != null and file_original_name != ''">
+			AND f.file_original_name =#{file_original_name}
+		</if>
+		<if test="file_server_name != null and file_server_name != ''">
+			AND f.file_server_name =#{file_server_name}
+		</if>
+		<if test="file_seq != null and file_seq != ''">
+			AND f.seq = CAST(#{file_seq} AS INT)
+		</if>
+		<if test="attachTargetNames != null and attachTargetNames != ''">
+			AND f.file_target_name IN 
+			<foreach collection="attachTargetNames" item="attachTargetNames" open="(" close=")" separator=",">
+			 #{attachTargetNames}
+			</foreach>
+		</if>
+	</sql>
+
+	<select id="fileRead" resultType="java.util.HashMap">
+		SELECT
+			seq
+			,company
+			,file_server_name
+			,file_original_name
+			,file_path
+			,file_size
+			,file_type
+			,file_target_seq
+			,file_target_name
+			,deletion_flag
+			,creator
+			,create_date
+		FROM
+			front.files f
+		WHERE
+			f.company = #{company}
+		AND deletion_flag IS NULL
+		<include refid="fileReadCondition" />
+		<if test="paging != null and pageSize != null and page != null">	
+				LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>
+	</select>
+	
+	<select id="fileCount" resultType="int">
+		SELECT 
+			COUNT(0)
+		FROM
+			front.files f
+		WHERE
+			f.company = #{company}
+		<include refid="fileReadCondition" />
+	</select>
+
+
+	<select id="fileCreate" resultType="int">							  
+		INSERT INTO front.files (
+			company
+			,file_server_name
+			,file_original_name
+			,file_path
+			,file_size
+			,file_type
+			,file_target_seq
+			,file_target_name
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{file_server_name}
+			,#{file_original_name}
+			,#{file_path}
+			,#{file_size}
+			,#{file_type}
+			,${file_target_seq}
+			,#{file_target_name}
+			,#{user_id}
+			,NOW()
+		) RETURNING seq
+	</select>
+
+	<update id="fileDeleteUpdate">
+		UPDATE 
+			front.files
+		SET
+			deletion_flag = 'X'
+		WHERE
+			company = #{company}
+		<if test="file_server_name != null and file_server_name != ''">
+			AND file_server_name = #{file_server_name}
+		</if>
+		<if test="file_target_name != null and file_target_name != ''">
+			AND file_target_name = #{file_target_name}
+		</if>
+		<if test="file_target_seq != null and file_target_seq != ''">
+			AND file_target_seq = ${file_target_seq}
+		</if>
+		<if test="file_seq != null and file_seq != ''">
+			AND seq = ${file_seq}
+		</if>
+	</update>
+	<delete id="fileDelete">
+		DELETE 
+		FROM
+			front.files
+		WHERE
+			company = #{company}
+		<if test="file_server_name != null and file_server_name != ''">
+			AND file_server_name = #{file_server_name}
+		</if>
+		<if test="file_target_name != null and file_target_name != ''">
+			AND file_target_name = #{file_target_name}
+		</if>
+		<if test="file_target_seq != null and file_target_seq != ''">
+			AND file_target_seq = ${file_target_seq}
+		</if>
+		<if test="file_seq != null and file_seq != ''">
+			AND seq = ${file_seq}
+		</if>
+	</delete>
+</mapper>

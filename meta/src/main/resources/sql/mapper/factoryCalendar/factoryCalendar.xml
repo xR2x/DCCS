@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.factoryCalendar.FactoryCalendarMapper"> 
+	
+	<select id="factoryCalendarRead" resultType="java.util.HashMap">
+		<choose>
+			<when test="calendar_type != null and calendar_type != ''">
+				SELECT 
+					(CASE WHEN c2.date is not null THEN c2.date ELSE c1.date END) AS date,
+					(CASE WHEN c2.date is not null THEN c2.remark ELSE c1.remark END) AS remark,
+					(CASE WHEN c2.date is not null THEN c2.holiday_work_flag ELSE c1.holiday_work_flag END) AS holiday_work_flag,
+					(CASE WHEN c2.date is not null THEN c2.work_type ELSE c1.work_type END) AS work_type,
+					(CASE WHEN c2.date is not null THEN c2.work_flag ELSE c1.work_flag END) AS work_flag,
+					(CASE WHEN c2.date is not null THEN c2.work_type_factor ELSE c1.work_type_factor END) AS work_type_factor
+				FROM master.factory_calendar c1 LEFT JOIN 
+				master.factory_calendar_extend c2 
+				ON 
+					c1.company = c2.company 
+					AND c1.date = c2.date 
+					AND c2.calendar_type = #{calendar_type} 
+					AND c2.calendar_key = #{calendar_key} 
+					AND equipment_seq = #{equipment_seq}::INT
+				WHERE 
+					c1.company = #{company}
+					AND CAST(DATE_PART('YEAR', c1.date) AS VARCHAR) = #{year}
+			</when>
+			<otherwise>
+				SELECT 
+					date,
+					remark,
+					holiday_work_flag,
+					work_type,
+					work_flag,
+					work_type_factor
+				 FROM master.factory_calendar AS t1
+				WHERE company = #{company}
+				  AND CAST(DATE_PART('YEAR',t1.date) AS VARCHAR) = #{year}
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="factoryCalendarExtendCheck" resultType="int">
+		SELECT 
+			COUNT(0)
+		FROM
+			master.factory_calendar_extend c1
+		WHERE
+			c1.company = #{company}
+		AND CAST(DATE_PART('YEAR', c1.date) AS VARCHAR) = #{year}
+		AND c1.calendar_type = #{calendar_type} 
+		AND c1.calendar_key = #{calendar_key} 
+		AND c1.equipment_seq = #{equipment_seq}::INT
+			
+	</select>
+
+	<insert id="factoryCalendarCreate">
+		<choose>
+			<when test="calendar_type != null and calendar_type != ''">
+				INSERT INTO master.factory_calendar_extend (	
+					 company
+					,calendar_type
+					,calendar_key
+					,date
+					,work_flag
+					,remark
+					,holiday_work_flag
+					,work_type
+					,work_type_factor
+					,equipment_seq
+				) VALUES (
+					 #{company}
+					,#{calendar_type}
+					,#{calendar_key}
+					,#{date}::DATE
+					,#{work_flag}
+					,#{remark}
+					,#{holiday_work_flag}
+					,#{work_type}
+					,#{work_type_factor}::NUMERIC
+					,#{equipment_seq}::INT
+				)
+			</when>
+			<otherwise>
+				INSERT INTO master.factory_calendar(	
+					 company
+					,date
+					,work_flag
+					,remark
+					,holiday_work_flag
+					,work_type
+					,work_type_factor
+				) VALUES (
+					 #{company}
+					,#{date}::DATE
+					,#{work_flag}
+					,#{remark}
+					,#{holiday_work_flag}
+					,#{work_type}
+					,#{work_type_factor}::NUMERIC
+				)
+			</otherwise>
+		</choose>
+	</insert>
+
+	<update id="factoryCalendarUpdate">
+		<choose>
+			<when test="calendar_type != null and calendar_type != ''">
+				UPDATE 
+					master.factory_calendar_extend
+				SET 
+					work_flag = #{work_flag}
+					,remark = #{remark}
+					,holiday_work_flag = #{holiday_work_flag}
+					<if test="work_type_factor != null and work_type_factor != ''">
+						,work_type_factor = #{work_type_factor}::NUMERIC
+					</if> 
+					,work_type = #{work_type}
+				WHERE 
+					company = #{company}
+				<if test="multi_save_flag != null and multi_save_flag == ''">
+					AND date = #{date}::DATE
+				</if> 
+				<if test="multi_save_flag != null and multi_save_flag != ''">
+					AND date <![CDATA[>=]]> #{date_from}::DATE AND date <![CDATA[<=]]> #{date_to}::DATE
+					<if test="multi_save_holiday_flag != null and multi_save_holiday_flag == ''">
+						AND work_flag = 'X'
+					</if> 
+				</if> 
+				AND calendar_type = #{calendar_type}
+				AND calendar_key = #{calendar_key}
+				AND equipment_seq = #{equipment_seq}::INT
+			</when>
+			<otherwise>
+				UPDATE 
+					master.factory_calendar
+				SET 
+					work_flag = #{work_flag}
+					,remark = #{remark} 
+					,holiday_work_flag = #{holiday_work_flag}
+					<if test="work_type_factor != null and work_type_factor != ''">
+						,work_type_factor = #{work_type_factor}::NUMERIC
+					</if> 
+					,work_type = #{work_type}
+				WHERE 
+					company = #{company}
+				<if test="multi_save_flag != null and multi_save_flag == ''">
+					AND date = #{date}::DATE
+				</if> 
+				<if test="multi_save_flag != null and multi_save_flag != ''">
+					AND date <![CDATA[>=]]> #{date_from}::DATE AND date <![CDATA[<=]]> #{date_to}::DATE
+					<if test="multi_save_holiday_flag != null and multi_save_holiday_flag == ''">
+						AND work_flag = 'X'
+					</if> 
+				</if> 
+				
+			</otherwise>
+		</choose>
+	</update>
+	
+	<select id="factoryCalendarWorkTypeRead" resultType="java.util.HashMap">
+		SELECT 
+			 seq
+			,work_type
+			,time_from
+			,time_to
+			,remark
+			,(total_time / 3600) AS total_time
+		  FROM 
+			master.factory_calendar_work_type
+		 WHERE company = #{company}
+	</select>
+
+	<select id="factoryCalendarBreakTypeRead" resultType="java.util.HashMap">
+		SELECT 
+			seq
+			,work_type_seq
+			,time_from
+			,time_to
+			,remark
+		  FROM master.factory_calendar_break_type
+		 WHERE company = #{company}
+	</select>
+
+	<select id="factoryCalendarSpecialRule" resultType="java.util.HashMap">
+		SELECT 
+			date
+			,remark
+		FROM 
+			master.factory_calendar_special_rule AS t1
+		WHERE 
+			CAST(DATE_PART('YEAR',t1.date) AS VARCHAR) = #{year}
+	</select>
+
+</mapper>

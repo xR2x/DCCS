@@ -1,0 +1,662 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.routing.RoutingMapper"> 
+
+	<sql id="routingReadCondition">			
+		<if test="seq != null and seq != ''">
+			AND h.seq = ${seq}
+		</if>
+		<if test="material != null and material != ''">
+			AND h.material LIKE master.searchType(#{material})
+		</if>                                    
+		<if test="revision != null and revision != ''">
+			AND h.revision LIKE master.searchType(#{revision})
+		</if> 	
+		<if test="plant != null and plant != ''">
+			AND h.plant LIKE master.searchType(#{plant})
+		</if> 	      
+		<if test="project_code != null and project_code != ''">
+			AND h.project_code LIKE master.searchType(#{project_code})
+		</if>
+		<if test="general_note != null and general_note != ''">
+			AND h.general_note LIKE master.searchType(#{general_note})
+		</if>
+		<if test="sequence_operation != null and sequence_operation != ''">
+			AND h.sequence_operation = #{sequence_operation}
+		</if>
+		<if test="status != null and status != ''">
+			AND h.status = #{status}
+		</if>
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = h.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND h.create_date <![CDATA[>]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND h.create_date <![CDATA[<]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+		<if test="routing_no != null and routing_no != ''">
+			AND h.seq = CAST(#{routing_no} AS INT)
+		</if>
+		<if test="active_flag != null and active_flag != ''">
+			AND h.active_flag = #{active_flag}
+		</if>
+		<if test="standard_flag != null and standard_flag != ''">
+			<if test='standard_flag == "X"'>
+				AND h.standard_flag = #{standard_flag}
+			</if>
+			<if test='standard_flag != "X"'>
+				AND h.standard_flag IS NULL
+			</if>
+		</if>
+	</sql>
+
+	<select id="routingHeaderRead" resultType="java.util.HashMap">
+		SELECT 
+			seq
+			,material
+			,plant
+			,revision
+			,standard_flag
+			,general_note
+			,project_code
+			,(SELECT project_name FROM master.project WHERE company = h.company AND project_code = h.project_code) AS project_name
+			,status
+			,(SELECT code_name FROM master.common_code WHERE company IN ('COMMON',h.company) AND type = 'routing_status' AND code = h.status) AS status_name
+			,sequence_operation
+			,(SELECT COUNT(0) FROM master.routing WHERE routing_header_seq = h.seq AND deletion_flag is null) AS routing_count
+			,(SELECT tv_eff_flag FROM master.material_plant WHERE material = h.material AND plant = h.plant AND deletion_flag IS NULL LIMIT 1) AS tv_eff_flag
+			,creator
+			,(SELECT "name" FROM master.user WHERE user_id = h.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI:SS') AS create_date	
+			,(SELECT seq FROM master.routing_header WHERE company = h.company AND material = h.material AND plant = h.plant AND deletion_flag IS NULL AND active_flag IS NULL AND seq <![CDATA[<]]> h.seq ORDER BY seq LIMIT 1) AS before_routing_no
+			,active_flag
+			,request_no
+			,(SELECT tv_eff_flag FROM master.material_plant WHERE company = h.company AND material = h.material AND plant = h.plant) AS tv_eff_flag 
+		FROM
+			master.routing_header h
+		WHERE
+			company = #{company}					 
+		<include refid="routingReadCondition" />
+		AND deletion_flag IS NULL		
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>					
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>	
+	</select>
+
+	<select id="routingCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM
+			master.routing_header h
+		WHERE
+			company = #{company}	
+		<include refid="routingReadCondition" />	
+		AND deletion_flag IS NULL	
+	</select>
+	
+	<select id="routingItemRead" resultType="java.util.HashMap">
+		SELECT 
+			h.material
+			,h.plant
+			,h.revision			
+			,r.op
+			,r.sop
+			,r.gop
+			,r.workcenter
+			,r.standard_text_code
+			,r.standard_text_revision
+			,r.standard_text_title
+			,r.standard_text
+			,r.inspection_code
+			,r.change_no
+			,(SELECT tv FROM master.change_number WHERE change_no = r.change_no) AS tv
+			,(SELECT eff_from FROM master.change_number WHERE change_no = r.change_no) AS eff_from
+			,(SELECT eff_to FROM master.change_number WHERE change_no = r.change_no) AS eff_to
+
+		FROM
+			master.routing_header h
+			INNER JOIN
+			master.routing r
+			ON
+				h.company = r.company
+			AND h.seq = r.routing_header_seq
+		WHERE
+			h.company = #{company}	
+		<include refid="routingReadCondition" />			
+		AND h.deletion_flag IS NULL	
+		AND r.deletion_flag IS NULL
+		ORDER BY h.material, h.plant, h.revision, r.op, r.sop
+	</select>
+
+	<select id="routingHeaderCreate" resultType="int">							  
+		INSERT INTO master.routing_header(	
+			company
+			,material
+			,plant
+			,revision
+			,standard_flag
+			,general_note
+			,project_code
+			,status
+			,sequence_operation
+			,active_flag
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{material}
+			,#{plant}
+			,#{revision}
+			,#{standard_flag}
+			,#{general_note}
+			,#{project_code}
+			,#{status}
+			,#{sequence_operation}
+			,#{active_flag}
+			,#{user_id}
+			,NOW()	
+		) RETURNING seq
+	</select>
+
+	<select id="routingCreate" resultType="int">							  
+		INSERT INTO master.routing(
+			company
+			,routing_header_seq
+			,op
+			,sop
+			,gop
+			,change_no
+			,workcenter
+			,inspection_code
+			,standard_text_code
+			,standard_text_revision
+			,standard_text
+			,standard_text_title
+			,creator
+			,create_date
+			,material
+			,plant
+			,revision
+		) VALUES (
+			#{company}
+			,CAST(#{routing_header_seq} AS INT)
+			,CAST(#{op} AS INT)
+			,CAST(#{sop} AS INT)
+			,#{gop}
+			,CAST(#{change_no} AS INT)
+			,#{workcenter}
+			,#{inspection_code}
+			,#{standard_text_code}
+			,#{standard_text_revision}
+			,#{standard_text}
+			,#{standard_text_title}
+			,#{user_id}
+			,NOW()	
+			,#{material}
+			,#{plant}
+			,#{revision}
+		) RETURNING seq
+	</select>        
+
+	<select id="getRoutingNo" resultType="int">
+		SELECT 
+			seq
+		FROM
+			master.routing_header h
+		WHERE
+			company = #{company}					 
+		AND material = #{material}
+		AND plant = #{plant}
+		AND revision = #{revision}
+		AND active_flag IS NOT NULL
+		AND deletion_flag IS NULL
+	</select>
+
+	<select id="routingRead" resultType="java.util.HashMap">
+		SELECT 
+			r.seq
+			,r.company
+			,r.routing_header_seq
+			,r.op
+			,r.sop
+			,r.gop
+			,r.change_no
+			,r.workcenter
+			,r.inspection_code
+			,r.standard_text_code
+			,r.standard_text_revision
+			,r.standard_text
+			,r.standard_text_title
+			,(SELECT tv FROM master.change_number WHERE change_no = r.change_no) AS tv
+			,(SELECT eff_from FROM master.change_number WHERE change_no = r.change_no) AS eff_from
+			,(SELECT eff_to FROM master.change_number WHERE change_no = r.change_no) AS eff_to
+
+		FROM 
+			master.routing AS r
+		WHERE
+			r.company = #{company}
+		AND r.routing_header_seq = CAST(#{seq} AS INT)
+		<if test="change_no != null and change_no != ''">
+			<choose>
+				<when test='allEff != null and allEff != "" and allEff == "X"'>
+				</when>
+				<otherwise>
+					AND r.change_no = #{change_no}::INT
+				</otherwise>
+			</choose>
+		</if>
+		AND r.deletion_flag IS NULL	   
+		ORDER BY r.op, r.sop
+	</select> 
+	
+	<update id="routingHeaderDelete">
+		UPDATE 
+			master.routing_header
+		SET 
+			deletion_flag = 'X',
+			active_flag = null
+		WHERE
+			company	= #{company} 
+		AND seq = CAST(#{seq} AS INT)	
+	</update>
+
+	<update id="routingDelete">
+		UPDATE 
+			master.routing
+		SET 
+			deletion_flag = 'X'
+		WHERE
+			company = #{company}  
+		AND seq = CAST(#{seq} AS INT)
+	</update>
+
+	<update id="routingDeleteAll">
+		UPDATE 
+			master.routing
+		SET 
+			deletion_flag = 'X'
+		WHERE
+			company = #{company}  
+		AND routing_header_seq = CAST(#{seq} AS INT)
+	</update>
+
+	<delete id="routingDeleteClear">
+		DELETE 
+		FROM
+			master.routing
+		WHERE
+			company = #{company}  
+		AND routing_header_seq = CAST(#{seq} AS INT)
+		<if test="header_change_no != null and header_change_no != ''">
+			AND change_no = #{header_change_no}::INT
+		</if>
+	</delete>       
+
+	<update id="routingHeaderUpdate">
+		UPDATE 
+			master.routing_header
+		SET
+			general_note = #{general_note}
+			,project_code = #{project_code}
+			,sequence_operation = #{sequence_operation}
+			,status = #{status}
+			,active_flag = #{active_flag}
+			,request_no = #{request_no}
+		WHERE
+			company = #{company}
+		AND seq = CAST(#{seq} AS INT)
+	</update>
+
+	<update id="routingUpdate">
+		UPDATE 
+			master.routing
+		SET 
+			op = #{op}
+			,sop = #{sop}
+			,gop = #{gop}
+			,workcenter = #{workcenter}
+			,inspection_code = #{inspection_code}
+			,standard_text_code = #{standard_text_code}
+			,standard_text_revision	= #{standard_text_revision}
+			,standard_text = #{standard_text}
+			,standard_text_title = #{standard_text_title}
+		WHERE
+			company = #{company}
+		AND seq = CAST(#{seq} AS INT)
+	</update>
+
+	<update id="routingHeaderActiveChange">
+		UPDATE 
+			master.routing_header
+		SET 
+			active_flag = #{active_flag}
+		WHERE
+			company	= #{company} 
+		<if test="seq != null and seq != null">	
+			AND seq	= CAST(#{seq} AS INT)
+		</if>
+		<if test="material != null and material != null">	
+			AND material = #{material}
+		</if>
+		<if test="plant != null and plant != null">	
+			AND plant = #{plant}
+		</if>
+		<if test="revision != null and revision != null">	
+			AND revision = #{revision}
+		</if>
+	</update>
+
+	<select id="leadTimeRead" resultType="java.util.HashMap">
+		SELECT 
+			seq
+			,material
+			,plant
+			,revision
+			,gop
+			,workcenter
+			,setup
+			,run
+			,remove		
+		FROM 
+			master.leadtime l
+		WHERE
+			company = #{company}
+		AND (SELECT seq FROM master.routing_header WHERE company = l.company AND material = l.material AND plant = l.plant AND revision = l.revision AND deletion_flag IS NULL) = CAST(#{seq} AS INT) 
+		AND deletion_flag IS NULL
+	</select> 
+
+	<select id="leadTimeEquipmentRead" resultType="java.util.HashMap">
+		SELECT 
+			e.leadtime_seq
+			,l.gop
+			,e.equipment_seq
+			,(SELECT equipment_name FROM master.equipment WHERE seq = e.equipment_seq) AS equipment_name
+			,e.setup
+			,e.run
+			,e.remove
+			,e.spindle
+			,l.workcenter
+		FROM 
+			master.leadtime_equipment e
+			inner join
+			master.leadtime l
+			ON
+				e.company = l.company
+			AND e.leadtime_seq = l.seq
+		WHERE
+			e.company = #{company}
+		AND (SELECT seq FROM master.routing_header WHERE company = l.company AND material = l.material AND plant = l.plant AND revision = l.revision AND deletion_flag IS NULL) = CAST(#{seq} AS INT)	
+		AND e.deletion_flag IS NULL	
+		AND l.deletion_flag IS NULL	
+		ORDER BY leadtime_seq
+	</select> 
+
+	<select id="materialLeadTimeCreate" resultType="int">							  
+		INSERT INTO master.leadtime(
+			company
+			,material
+			,plant
+			,revision
+			,gop
+			,workcenter
+			,setup
+			,run
+			,remove
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{material}
+			,#{plant}
+			,#{revision}
+			,#{gop}
+			,#{workcenter}
+			,CAST(#{setup} AS NUMERIC)
+			,CAST(#{run} AS NUMERIC)
+			,CAST(#{remove} AS NUMERIC)
+			,#{user_id}
+			,NOW()
+		) RETURNING seq
+	</select> 
+	
+	<insert id="materialLeadTimeEquipmentCreate">							  
+
+		INSERT INTO master.leadtime_equipment(
+			company
+			,leadtime_seq
+			,equipment_seq
+			,equipment
+			,setup
+			,run
+			,remove	
+			,creator
+			,create_date
+			,spindle
+			,equipment_code
+		) VALUES (
+			#{company}
+			,CAST(#{leadtime_seq} AS INT)
+			,CAST(#{equipment_seq} AS INT)
+			,(SELECT equipment_name FROM master.equipment WHERE seq = CAST(#{equipment_seq} AS INT))
+			,CAST(#{setup} AS NUMERIC)
+			,CAST(#{run} AS NUMERIC)
+			,CAST(#{remove} AS NUMERIC)
+			,#{user_id}
+			,NOW()
+			,CAST(#{spindle} AS NUMERIC)
+			,(SELECT equipment_code FROM master.equipment WHERE seq = CAST(#{equipment_seq} AS INT))
+		)
+		
+	</insert>  
+
+	<delete id="materialLeadTimeDelete">
+		DELETE 	
+		FROM
+			master.leadtime 
+		WHERE
+			company = #{company}
+		AND material = #{material}
+		AND plant = #{plant}
+		AND revision = #{revision}
+	</delete>
+
+	<delete id="materialLeadTimeEquipmentDelete">
+		DELETE 	
+		FROM 
+			master.leadtime_equipment e
+		USING
+			master.leadtime l
+		WHERE
+			e.leadtime_seq = l.seq		
+		AND l.company = #{company} 
+		AND l.material = #{material} 
+		AND l.plant = #{plant} 
+		AND l.revision = #{revision} 
+	</delete>
+
+	<delete id="getMaterialLeadTimeCount">
+		SELECT
+			count(*)
+		FROM
+			master.leadtime 
+		WHERE
+			company = #{company}
+		AND material = #{material}
+		AND plant = #{plant}
+		AND revision = #{revision}
+		AND gop = #{gop}
+	</delete>
+
+	<select id="getRoutingHeaderCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM
+			master.routing_header h
+		WHERE
+			company = #{company}					 
+		AND material = #{material}
+		AND plant = #{plant}
+		AND revision = #{revision}
+		AND deletion_flag IS NULL
+	</select>  
+
+	<select id="routingApprovalCreate" resultType="int">							  
+		INSERT INTO master.routing_approval(
+			company
+			,routing_header_seq
+			,remark
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,CAST(#{seq} AS INT)
+			,#{remark}
+			,#{user_id}
+			,NOW()
+		) RETURNING request_no
+	</select>     
+
+	<insert id="routingApprovalHistoryCreate" >							  
+		INSERT INTO master.routing_approval_history(
+			request_no
+			,status
+			,creator
+			,create_date
+			,remark
+		) VALUES (
+			CAST(#{request_no} AS INT)
+			,#{status}
+			,#{user_id}
+			,NOW()
+			,#{remark}	
+		)
+	</insert>  
+
+	<update id="routingHeaderApprovalUpdate">
+		UPDATE 
+			master.routing_header
+		SET
+			status = #{status}			
+			<if test="request_no != null and request_no != ''">
+				,request_no = #{request_no}
+			</if>
+			<if test="active_flag != null and active_flag != ''">
+				,active_flag = #{active_flag}
+			</if>             
+		WHERE
+			company = #{company}
+		AND seq = CAST(#{seq} AS INT)
+	</update>
+
+	<insert id="routingAssignCreate">
+		INSERT INTO master.routing_assign (
+			company
+			,routing_header_seq
+			,routing_no
+			,change_no
+			,material
+			,plant
+			,revision
+			,op
+			,sop
+			,assign_key
+			,assign_value
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{routing_header_seq}::INT
+			,#{routing_no}::INT
+			,#{change_no}::INT
+			,#{material}
+			,#{plant}
+			,#{revision}
+			,#{op}::INT
+			,#{sop}::INT
+			,#{assign_key}
+			,#{assign_value}::JSON
+			,#{user_id}
+			,NOW()
+		)
+	</insert>
+
+	<select id="routingAssignRead" resultType="java.util.HashMap">
+		SELECT 
+			seq
+			,company
+			,material
+			,plant
+			,revision
+			,op
+			,sop
+			,assign_key
+			,assign_value
+			,routing_no
+		FROM 
+			master.routing_assign AS t1
+		WHERE
+			company = #{company}
+<!--		
+			AND (SELECT seq FROM master.routing_header WHERE company = t1.company AND material = t1.material AND plant = t1.plant AND revision = t1.revision AND deletion_flag IS NULL) = #{seq}::INT 
+-->
+		AND routing_header_seq = #{seq}::INT 
+		AND deletion_flag IS NULL			
+	</select>
+
+	<delete id="routingAssignDelete">
+		DELETE 
+		FROM 
+			master.routing_assign
+		WHERE
+			company = #{company}
+		AND material = #{material}
+		AND plant = #{plant}
+		AND revision = #{revision}
+		AND routing_header_seq = #{routing_header_seq}::INT
+		<if test="header_change_no != null and header_change_no != ''">
+			AND change_no = #{header_change_no}::INT
+		</if>
+
+	</delete>
+
+	<select id="routingRevisionCheck" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM
+			master.routing_header AS t1
+		WHERE
+			company = #{company}
+		AND material = #{material}
+		AND plant = #{plant}
+		AND revision = #{newRevision}
+		AND deletion_flag IS NULL
+	</select>
+
+
+	<select id="routingReportSelect" resultType="java.util.HashMap">
+		SELECT 
+			seq
+			,material
+			,plant
+			,revision		
+			,(SELECT tv_eff_flag FROM master.material_plant WHERE company = h.company AND material = h.material AND plant = h.plant) AS tv_eff_flag 
+		FROM
+			master.routing_header h   
+		WHERE
+			company = #{company}
+		<if test="seqs != null and seqs != ''">
+			AND h.seq IN 
+			<foreach collection="seqs" item="seqs" open="(" close=")" separator=",">
+			 #{seqs}
+			</foreach>
+		</if>			
+	</select>
+</mapper>

@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.workcenter.WorkcenterMapper"> 
+
+	<sql id="workcenterReadCondition">			
+		<if test="workcenter != null and workcenter != ''">
+			AND workcenter LIKE master.searchType(#{workcenter})
+		</if>                      
+		<if test="name != null and name != ''">
+			AND "name" LIKE master.searchType(#{name})
+		</if>                      
+		<if test="category != null and category != ''">
+			AND category LIKE master.searchType(#{category})
+		</if> 	
+		<if test="ccr_flag != null and ccr_flag != ''">
+			AND ccr_flag = #{ccr_flag}
+		</if>
+		<if test="non_ccr_flag != null and non_ccr_flag != ''">
+			AND ccr_flag IS NULL
+		</if>
+		<if test="lead_time != null and lead_time != ''">
+			AND lead_time = #{lead_time}::INT
+		</if> 	
+		<if test="worktime_factor != null and worktime_factor != ''">
+			AND worktime_factor = #{worktime_factor}::NUMERIC
+		</if>
+		<if test="remark != null and remark != ''">
+			AND "remark" LIKE master.searchType(#{remark})
+		</if>
+		<if test="equipment_name != null and equipment_name != ''">
+			AND (SELECT COUNT(0) FROM master.workcenter_equipment WHERE company = w.company AND workcenter_seq = w.seq AND equipment_name LIKE CONCAT('%',#{equipment_name},'%')) > 0
+		</if>
+		<if test="equipment_seq != null and equipment_seq != ''">
+			AND (SELECT COUNT(0) FROM master.workcenter_equipment WHERE company = w.company AND workcenter_seq = w.seq AND equipment_seq = #{equipment_seq}::INT) > 0
+		</if>
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = w.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND w.create_date <![CDATA[>]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND w.create_date <![CDATA[<]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+		<if test="equipment_flag != null and equipment_flag != ''">
+			AND (SELECT COUNT(0) FROM master.workcenter_equipment WHERE workcenter_seq = w.seq) <![CDATA[>]]> 0
+		</if>        
+		<if test="seq != null and seq != ''">
+			AND w.seq = ${seq}
+		</if>
+	</sql>
+
+	<select id="workcenterRead" resultType="java.util.HashMap">	 
+		SELECT
+			seq
+			,company
+			,workcenter
+			,category
+			,(SELECT code_name FROM master.common_code WHERE company IN ('COMMON',w.company) AND type = 'workcenter_category' AND code = w.category) AS category_name
+			,"name"
+			,ccr_flag
+			,lead_time
+			,worktime_factor
+			,grouping_period
+			,(SELECT COUNT(0) FROM master.workcenter_equipment WHERE workcenter_seq = w.seq) AS multi_work_count
+			,remark
+			,creator
+			,(SELECT "name" FROM master.user WHERE user_id = w.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI') AS create_date
+			<if test="use_check != null and use_check != ''">
+				,((SELECT COUNT(0) FROM master.routing WHERE company = w.company AND workcenter = w.workcenter AND deletion_flag IS NULL)+
+				(SELECT COUNT(0) FROM master.equipment WHERE company = w.company AND workcenter = w.workcenter AND deletion_flag IS NULL)+
+				(SELECT COUNT(0) FROM product.shop_order_routing WHERE company = w.company AND workcenter = w.workcenter AND deletion_flag IS NULL)+
+				(SELECT COUNT(0) FROM product.shop_order_status WHERE company = w.company AND current_workcenter = w.workcenter AND completion_flag IS NULL)) AS use_count
+			</if>
+		FROM
+			master.workcenter w
+		WHERE
+			company = #{company} 
+		<include refid="workcenterReadCondition" />
+		AND deletion_flag IS NULL	
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+			<if test="sort2 != null and sortType2 != null">	
+				,${sort2} ${sortType2}
+			</if>
+		</if>
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>					  
+	</select>
+
+	<select id="workcenterReadCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM
+			master.workcenter w
+		WHERE
+			company = #{company} 
+		<include refid="workcenterReadCondition" />			  
+		AND deletion_flag IS NULL	
+	</select>
+
+	<select id="workcenterEquipmentRead" resultType="java.util.HashMap">	 
+		SELECT
+			seq
+			,company
+			,workcenter_seq
+			,workcenter
+			,equipment_seq
+			,(SELECT equipment_name FROM master.equipment WHERE seq = e.equipment_seq) AS equipment_name
+			,spindle
+			,creator
+			,(SELECT "name" FROM master.user WHERE user_id = e.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI') AS create_date			
+		FROM
+			master.workcenter_equipment e
+		WHERE
+			company = #{company} 
+		AND workcenter_seq = ${workcenter_seq}
+		AND deletion_flag IS NULL
+	</select>  
+
+	<select id="getWorkcenterCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM
+			master.workcenter
+		WHERE
+			company		= #{company} 
+		AND workcenter	= #{workcenter} 
+	</select> 
+
+	<select id="getWorkcenterDeleteCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM
+			master.workcenter
+		WHERE
+			company		= #{company} 
+		AND workcenter	= #{workcenter} 
+		AND deletion_flag IS NOT NULL
+	</select> 
+
+	<select id="workcenterCreate" resultType="int">
+		INSERT INTO master.workcenter(
+			company
+			,workcenter
+			,category
+			,name
+			,ccr_flag
+			,lead_time
+			,worktime_factor
+			,grouping_period
+			,remark
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{workcenter}
+			,#{category}
+			,#{name}
+			,#{ccr_flag}
+			,CAST(#{lead_time} AS NUMERIC)
+			,CAST(#{worktime_factor} AS NUMERIC)
+			,CAST(#{grouping_period} AS INTEGER)
+			,#{remark}
+			,#{user_id}
+			,NOW()	
+		) RETURNING seq
+	</select>
+
+	<select id="workcenterEquipmentCreate" resultType="int">
+		INSERT INTO master.workcenter_equipment (
+			company
+			,workcenter_seq
+			,workcenter
+			,equipment_seq
+			,spindle
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,CAST(#{workcenter_seq} AS INT)
+			,#{workcenter}
+			,CAST(#{equipment_seq} AS INT)
+			,CAST(#{spindle} AS INT)
+			,#{user_id}
+			,NOW()	
+		) RETURNING seq
+	</select>
+
+	<delete id="workcenterEquipmentDelete">
+		DELETE FROM master.workcenter_equipment WHERE workcenter_seq = ${workcenter_seq}
+	</delete>
+  
+	<update id="workcenterUpdate">
+		UPDATE 
+			master.workcenter
+		SET 
+			category = #{category}
+			,"name" = #{name}
+			,ccr_flag = #{ccr_flag}
+			,lead_time = CAST(#{lead_time} AS NUMERIC)
+			,worktime_factor = CAST(#{worktime_factor} AS NUMERIC)
+			,grouping_period = CAST(#{grouping_period} AS INTEGER)
+			,remark = #{remark}
+			,deletion_flag = NULL
+		WHERE
+			company = #{company}
+		AND workcenter = #{workcenter} 
+	</update>
+
+	<update id="workcenterDelete">
+		UPDATE 
+			master.workcenter
+		SET 
+			deletion_flag		= 'X'
+		WHERE
+			company 			= #{company} 
+		AND workcenter			= #{workcenter} 
+	</update>
+
+	<select id="workcenterEquipmentCount" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM
+			master.workcenter_equipment e
+		WHERE
+			company = #{company} 
+		AND equipment_seq = CAST(${equipment_seq} AS INT)
+		AND deletion_flag IS NULL
+	</select>
+
+	<select id="workcenterEquipmentInfo" resultType="java.util.HashMap">	 
+		SELECT
+			workcenter			
+			,(SELECT equipment_name FROM master.equipment WHERE seq = e.equipment_seq) AS equipment_name	
+		FROM
+			master.workcenter_equipment e
+		WHERE
+			company = #{company} 
+		AND equipment_seq = CAST(${equipment_seq} AS INT)
+		AND deletion_flag IS NULL
+	</select>  
+	
+</mapper>

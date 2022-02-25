@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.standardText.StandardTextMapper">
+
+	<sql id="standardTextReadCondition">		
+		<if test="code != null and code != ''">
+			AND s.code LIKE master.searchType(#{code})
+		</if> 
+		<if test="title != null and title != ''">
+			AND s.title LIKE master.searchType(#{title})
+		</if> 
+		<if test="inspection_code != null and inspection_code != ''">
+			AND s.inspection_code LIKE master.searchType(#{inspection_code})
+		</if> 		
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = s.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND s.create_date <![CDATA[>]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND s.create_date <![CDATA[<]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+		<if test="seq != null and seq != ''">
+			AND s.seq = ${seq}
+		</if> 
+		<if test="active_flag != null and active_flag != ''">
+			AND s.active_flag = #{active_flag}
+		</if> 		
+	</sql>
+  
+	<select id="standardTextRead" resultType="java.util.HashMap">
+		SELECT
+			seq
+			,company
+			,code
+			,revision
+			,title
+			,standard_text
+			,inspection_code
+			,(SELECT code_name FROM master.common_code WHERE company IN ('COMMON',s.company) AND "type" = 'inspection_code' AND code = s.inspection_code) AS inspection_code_name
+			,creator
+			,(SELECT "name" FROM master.user WHERE user_id = s.creator) AS creator_name
+			,TO_CHAR(s.create_date, 'YYYY-MM-DD HH24:MI') AS create_date	
+			,(SELECT COUNT(0) FROM master.routing WHERE company = s.company AND standard_text_code = s.code AND standard_text_revision = s.revision AND deletion_flag IS NULL) AS use_count
+			,active_flag
+		FROM 
+			master.standard_text s
+		WHERE	
+			company = #{company}
+		AND deletion_flag IS NULL
+		<include refid="standardTextReadCondition" />
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>
+	</select>
+
+	<select id="standardTextCount" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM 
+			master.standard_text s
+		WHERE	
+			company = #{company}
+		AND deletion_flag IS NULL
+		<include refid="standardTextReadCondition" />	
+	</select>
+
+	<select id="standardTextUseableCount" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM 
+			master.standard_text s
+		WHERE	
+			company = #{company}
+		AND code = #{code}
+		AND deletion_flag IS NULL
+		AND active_flag IS NOT NULL
+	</select>  
+
+	<select id="standardTextDeletionSeq" resultType="int">
+		SELECT
+			COALESCE(MAX(seq),0)
+		FROM 
+			master.standard_text s
+		WHERE	
+			company = #{company}
+		AND code = #{code}
+		AND revision = #{revision}
+		AND deletion_flag IS NOT NULL
+	</select>  
+
+	<select id="standardTextCreate" resultType="int">
+		INSERT INTO master.standard_text(
+				company
+				,code
+				,revision
+				,title
+				,standard_text
+				,inspection_code
+				,creator
+				,create_date
+				,active_flag
+			)VALUES (
+				#{company}
+				,#{code}
+				,#{revision}
+				,#{title}
+				,#{standard_text}
+				,#{inspection_code}
+				,#{user_id}
+				,NOW()
+				,'X'
+			) RETURNING seq 
+	</select>  
+
+	<update id="standardTextUpdate" >
+		UPDATE 
+			master.standard_text
+		SET 
+			title = #{title}
+			,standard_text = #{standard_text}
+			,inspection_code = #{inspection_code}
+			,deletion_flag = null
+		WHERE
+			company = #{company}
+		AND	seq = CAST(#{seq} AS INT)
+	</update> 
+	
+	<update id="standardTextDelete" >
+		UPDATE 
+			master.standard_text
+		SET 
+			deletion_flag = 'X',
+			active_flag = null
+		WHERE
+			company = #{company}
+		AND	seq = CAST(#{seq} AS INT)
+	</update> 
+
+	<update id="standardTextRoutingUpdate" >
+		UPDATE 
+			master.routing r
+		SET 
+			standard_text_title = s.title
+			,standard_text = s.standard_text
+		FROM 
+			master.standard_text s
+		WHERE
+			r.company = s.company
+		AND r.standard_text_code = s.code
+		AND r.standard_text_revision = s.revision
+		AND r.company = #{company} 
+		AND s.seq = CAST(#{seq} AS INT)  
+		AND r.standard_text_code IS NOT NULL
+		AND r.deletion_flag IS NULL	
+		AND s.deletion_flag IS NULL
+	</update> 
+
+	<update id="standardTextOrderRoutingUpdate" >
+		UPDATE 
+			product.shop_order_routing r
+		SET 
+			standard_text_title = s.title
+			,standard_text = s.standard_text
+		FROM 
+			master.standard_text s
+		WHERE
+			r.company = s.company
+		AND r.standard_text_code = s.code
+		AND r.standard_text_revision = s.revision
+		AND r.company = #{company}
+		AND s.seq = CAST(#{seq} AS INT)
+		AND r.standard_text_code IS NOT NULL
+		AND r.deletion_flag IS NULL	
+		AND s.deletion_flag IS NULL
+	</update> 
+
+	<update id="standardTextDeleteAll" >
+		DELETE FROM 
+			master.standard_text
+		WHERE
+			company = #{company}
+		AND	seq = CAST(#{seq} AS INT)
+	</update>
+	
+	<select id="StandardTextRevisionCheck" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM 
+			master.standard_text s
+		WHERE	
+			company = #{company}
+		AND code = #{code}
+		AND revision = #{newRevision}
+		AND deletion_flag IS NULL									
+	</select>
+
+	<update id="standardTextRevisionActiveChange">
+		UPDATE
+			master.standard_text
+		SET active_flag = #{active_flag}
+		WHERE	
+			company = #{company}
+		AND code = #{code}
+		AND revision = #{revision}
+		AND deletion_flag IS NULL
+	</update>
+
+	<update id="standardTextActiveChange">
+		UPDATE
+			master.standard_text
+		SET active_flag = #{active_flag}
+		WHERE	
+			company = #{company}
+		AND	seq = CAST(#{seq} AS INT)
+		AND deletion_flag IS NULL
+	</update>
+
+	<select id="getBeforeStandardTextSeq" resultType="int">
+		SELECT 	
+			COALESCE(MAX(seq), 0)
+		FROM 
+			master.standard_text s
+		WHERE	
+			company = #{company}
+		AND code = #{code}
+		AND seq <![CDATA[<]]> #{seq}::INT 
+		AND deletion_flag IS NULL 
+	</select>
+
+</mapper>

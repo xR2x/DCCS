@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.tool.ToolMapper"> 
+	
+	<sql id="toolReadCondition">			
+		<if test="tool_no != null and tool_no != ''">
+			AND tool_no LIKE master.searchType(#{tool_no})
+		</if>                      
+		<if test="tool_sn != null and tool_sn != ''">
+			AND tool_sn LIKE master.searchType(#{tool_sn})
+		</if>                      
+		<if test="revision != null and revision != ''">
+			AND revision LIKE master.searchType(#{revision})
+		</if> 	
+		<if test="tool_code != null and tool_code != ''">
+			AND tool_code LIKE master.searchType(#{tool_code})
+		</if> 	      
+		<if test="tool_class != null and tool_class != ''">
+			AND tool_class LIKE master.searchType(#{tool_class})
+		</if> 	
+		<if test="project_code != null and project_code != ''">
+			AND project_code LIKE master.searchType(#{project_code})
+		</if> 			          
+		<if test="location != null and location != ''">
+			AND "location" LIKE master.searchType(#{location})
+		</if>
+		<if test="spec != null and spec != ''">
+			AND spec LIKE master.searchType(#{spec})	
+		</if>
+		<if test="description != null and description != ''">
+			AND description LIKE master.searchType(#{description})
+		</if>
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = t.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND t.create_date <![CDATA[>]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND t.create_date <![CDATA[<]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+		<if test="inspection_cycle != null and inspection_cycle != ''">
+			AND inspection_cycle = CAST(#{inspection_cycle} AS INTEGER)
+		</if> 
+		<if test="inspection_cycle_unit != null and inspection_cycle_unit != ''">
+			AND inspection_cycle_unit = #{inspection_cycle_unit}
+		</if> 
+	</sql>
+
+	<select id="toolRead" resultType="java.util.HashMap">
+		SELECT 
+			seq
+			,tool_no
+			,tool_sn
+			,revision
+			,tool_code
+			,(SELECT code_name FROM master.common_code WHERE company = t.company AND type = 'tool_code' AND code = t.tool_code) AS tool_code_name
+			,tool_class
+			,inspection_cycle
+			,inspection_cycle_unit
+			,(SELECT code_name FROM master.common_code WHERE company IN ('COMMON', t.company) AND type = 'inspection_cycle_unit' AND code = t.inspection_cycle_unit) AS inspection_cycle_unit_name
+			,spec
+			,description
+			,project_code
+			,(SELECT project_name FROM master.project WHERE company = t.company AND project_code = t.project_code) AS project_name
+			,"location"
+			,remark
+			,status
+			,creator
+			,(SELECT "name" FROM master.user WHERE user_id = t.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI') AS create_date	
+		FROM 
+			master.tool t
+		WHERE
+			company = #{company}
+		<include refid="toolReadCondition" />
+		AND active_flag IS NOT NULL
+		AND deletion_flag IS NULL
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>					  
+	</select>
+
+	<select id="toolCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM 
+			master.tool t
+		WHERE
+			company = #{company}
+		<include refid="toolReadCondition" />			  
+		AND active_flag IS NOT NULL
+		AND deletion_flag IS NULL	
+	</select>  
+
+	<select id="getToolCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM 
+			master.tool t
+		WHERE
+			company = #{company}
+		AND tool_no = #{tool_no}
+		AND tool_sn = #{tool_sn}
+		AND deletion_flag IS NULL	
+	</select>  
+
+	<select id="getToolDeleteCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM 
+			master.tool t
+		WHERE
+			company = #{company}
+		AND tool_no = #{tool_no}
+		AND tool_sn = #{tool_sn}
+		AND revision = #{revision}
+		AND deletion_flag IS NOT NULL
+	</select>  
+
+	<select id="toolCreate" resultType="int">							  
+		INSERT INTO master.tool(	
+			company
+			,tool_no
+			,tool_sn
+			,revision
+			,tool_code
+			,tool_class
+			,inspection_cycle
+			,inspection_cycle_unit
+			,spec
+			,description
+			,project_code
+			,location
+			,remark
+			,status
+			,creator
+			,create_date	
+			,active_flag
+		)VALUES(
+			#{company}
+			,#{tool_no}
+			,#{tool_sn}
+			,#{revision}
+			,#{tool_code}
+			,#{tool_class}
+			,CAST(#{inspection_cycle} AS INT)
+			,#{inspection_cycle_unit}
+			,#{spec}
+			,#{description}
+			,#{project_code}
+			,#{location}
+			,#{remark}
+			,#{status}
+			,#{user_id}
+			,NOW()	
+			,'X'
+		)RETURNING seq 
+	</select>
+
+	<update id="toolUpdate">
+		UPDATE
+			master.tool
+		SET 
+			tool_code				= #{tool_code}
+			,tool_class				= #{tool_class}
+			,inspection_cycle		= CAST(#{inspection_cycle} AS INT)
+			,inspection_cycle_unit	= #{inspection_cycle_unit}
+			,spec					= #{spec}
+			,description			= #{description}
+			,project_code			= #{project_code}
+			,location				= #{location}
+			,remark					= #{remark}
+			,status					= #{status}	
+			,deletion_flag 			= NULL
+			,active_flag 			= 'X'
+		WHERE
+			company					= #{company}
+		AND tool_no					= #{tool_no}
+		AND revision				= #{revision}
+	</update>
+
+	<select id="getToolSeq" resultType="int">	
+		SELECT
+			seq
+		FROM 
+			master.tool
+		WHERE
+			company			= #{company}
+		AND tool_no			= #{tool_no}
+		AND revision		= #{revision}
+
+	</select>
+
+	<update id="toolDelete">
+		UPDATE 	
+			master.tool
+		SET 
+			deletion_flag	= 'X',
+			active_flag		= null
+		WHERE
+			company			= #{company}
+		AND tool_no			= #{tool_no}
+		AND revision		= #{revision}
+	</update>
+
+	<update id="toolBeforeRevisionUpdate">
+	<!-- 
+	UPDATE
+			master.tool
+		SET 
+			active_flag = 'X'
+		WHERE
+			seq = (SELECT seq FROM master.tool WHERE seq < ${seq} ORDER BY seq DESC LIMIT 1)	
+	 -->
+	</update>
+  
+</mapper>
