@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO">
+
+    <Properties>
+        <Property name="logFileName">Front</Property>
+        <Property name="consoleLayout">%style{%d{ISO8601}}{black} %highlight{%-5level }[%style{%t}{bright,blue}] %style{%C{1.}}{bright,yellow}: %msg%n%throwable</Property>
+        <Property name="fileLayout">%d [%t] %-5level %c(%M:%L) - %m%n</Property>
+		<Property name="filePath">/data/logs</Property>        
+    </Properties>
+
+    <Appenders>
+            
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${consoleLayout}" />
+        </Console>
+        
+        <RollingFile name="file" fileName="${filePath}/${logFileName}.log" filePattern="${filePath}/${logFileName}.%d{yyyy-MM-dd-hh}.log">
+            <PatternLayout pattern="${fileLayout}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1" /><!-- 시간별 로그 파일 생성-->
+            </Policies>
+            <DefaultRolloverStrategy max="5" fileIndex="min" /><!-- 롤링 파일 5개 까지 생성 -->
+        </RollingFile>
+        
+        <RollingFile name="sql_file" fileName="${filePath}/${logFileName}_sql.log" filePattern="${filePath}/${logFileName}.%d{yyyy-MM-dd-hh}_sql.log">
+            <PatternLayout pattern="${fileLayout}" />
+            <Policies>
+                <TimeBasedTriggeringPolicy modulate="true" interval="1" /><!-- 시간별 로그 파일 생성-->
+            </Policies>
+            <DefaultRolloverStrategy max="5" fileIndex="min" /><!-- 롤링 파일 5개 까지 생성 -->
+        </RollingFile>        
+                        
+    </Appenders>
+
+    <Loggers>
+
+        <Root level="INFO" additivity="false">
+            <AppenderRef ref="console"/>
+            <AppenderRef ref="file"/>
+        </Root>        
+
+        <!-- 스프링 프레임워크에서 찍는건 level을 info로 설정 -->
+        <logger name="org.springframework" level="WARN" additivity="false" >
+            <AppenderRef ref="console" level="ERROR"/>
+            <AppenderRef ref="file" />
+        </logger>
+
+        <!-- sql 관련 log 설정. -->
+		<logger name="jdbc" level="OFF"/>
+		
+		<!-- sql 관련 log 설정. sql view -->
+		<logger name="jdbc.sqlonly" level="INFO" additivity="false">			
+			<AppenderRef ref="sql_file" level="debug" />
+		</logger>
+		
+		<!-- 
+			sql 관련 log 설정. sql result view 	 
+		<logger name="jdbc.resultsettable" level="INFO" additivity="false">			
+			<AppenderRef ref="sql_file" level="debug" />
+		</logger>
+		-->	    
+		
+    </Loggers>
+</Configuration>

@@ -1,0 +1,64 @@
+<!doctype html> 
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="robots" content="index,nofollow"/>
+<title>Front</title>
+<link rel="stylesheet" href="/front/common/css/style.css">
+<link rel="stylesheet" href="/front/common/css/ui.css">
+<link rel="stylesheet" href="/front/common/css/font.css">
+<link rel="stylesheet" href="/front/common/css/button.css">
+<link rel="stylesheet" href="/front/common/css/jquery.scrollbar.css">
+<link rel="stylesheet" href="/front/common/css/jquery-ui.min.css">
+<link rel="stylesheet" href="/front/common/css/jquery.toast.css">
+<link rel="stylesheet" href="/front/common/css/ui.create.css">
+<link rel="stylesheet" href="/front/pop/closing/css/closing.css">
+<script type="text/javascript" src="/front/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.scrollbar.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.toast.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.scannerdetection.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.popup.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.js"></script>
+<script type="text/javascript" src="/front/common/js/tui-grid.js"></script>
+<script type="text/javascript" src="/front/common/js/common.js"></script>
+<script type="text/javascript" src="/front/pop/closing/js/closing.js"></script>
+</head>
+<body>
+	<div class="mainForm">	
+		<div style="float:left;width:50%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<span class="inputArea">
+				<label class="inputTitle"><span class='must'>*</span>생산마감일(From)</label>
+				<div class="inputWrap">
+					<span style="display:inline-block;">
+						<input type="text" id="date_from" style="width:135px;" autocomplete="off" disabled>
+						<div class="underline"></div>
+					</span>					
+				</div>
+			</span>
+		</div>
+		<div style="float:left;width:50%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<span class="inputArea">
+				<label class="inputTitle"><span class='must'>*</span>생산마감일(To)</label>
+				<div class="inputWrap">
+					<span style="display:inline-block;">
+						<input type="text" id="date_to" style="width:135px;" autocomplete="off" datetype="date" readonly="readonly">
+						<div class="underline"></div>
+					</span><img src="/front/common/img/icon/calendar_icon.png" class="calendarIcon" target="date_to">					
+				</div>
+			</span>
+		</div>
+		<div style="clear:both;height:80px">
+			<label class="inputTitle">Remark</label>
+			<div class="inputWrap">
+				<textarea id="remark" title="Remark"></textarea>
+				<div class="underline"></div>
+			</div>
+		</div>		
+	</div>
+	<div class="btn-group" id="save_button"><button class="btn xlarge color blue save" onclick="base.closing()">생산마감</button><button class="btn xlarge close" onclick="parent.popup.close()">취소</button></div>
+</body>
+</html>

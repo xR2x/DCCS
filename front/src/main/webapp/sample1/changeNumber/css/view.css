@@ -1,0 +1,39 @@
+body {
+	padding:10px;
+	background-color:#f3f4f8;
+}
+
+.addBtn {
+	position:absolute;
+	right:0px;
+	top:5px;
+	right:4px;
+}
+
+#form1 {
+	border-left:1px solid #EAEAEA;
+}
+
+.mainForm {
+	padding:10px;
+    background-color: #fff;
+	border-radius: 3px;
+    box-shadow: 0 4px 4px rgb(87 100 126 / 21%);
+}
+
+.btn.close {
+	margin-top:10px !important;
+	width:100px;	
+}
+
+.btn-area {
+	text-align:center;
+}
+
+.mainForm div select:disabled {
+	background-color:#FFFFFF !important;
+}
+
+.mainForm div select:hover {
+	background-color:#F5FAFC !important;
+}                           

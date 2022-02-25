@@ -1,0 +1,55 @@
+var base = {
+	init:function(){
+		base.set();
+	},
+	set:function(){
+		createForm.set({
+			width:1000
+			,title:"작업자 및 자격 생성"
+			,divisionType:null
+			,service:"/master/worker/create"
+			,beforeHandler:function(){
+				return true;
+			}
+			,afterHandler:function(json){
+				setTimeout(function(){
+					hash.set({"service":"master/worker/list"});
+				},500);
+			},
+			data:[{
+				name:"기본정보"
+				,data:
+				[[
+					{
+						title:"작업자 ID"
+						,id:"worker"
+						,type:"input"
+						,width:480
+						,maxLength:16
+						,dataType:"all"
+						,must:true
+					},
+					{
+						title:"Shift"
+						,id:"shift"
+						,type:"select"
+						,width:480
+						,dataType:"all"
+						,data:common.getShiftCode
+						,must:true
+					}
+				],[
+					{
+						title:"Remark"
+						,id:"remark"
+						,type:"input"
+						,width:970
+						,dataType:"all"
+						,must:false
+					}
+				]]
+			}
+		]});
+	}	
+}
+$(document).ready(base.init);

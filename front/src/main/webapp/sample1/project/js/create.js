@@ -1,0 +1,47 @@
+var base = {
+	init:function(){
+		base.set();
+	},
+	set:function(){
+		createForm.set({
+			width:1000
+			,title:"Project 생성"
+			,divisionType:null
+			,service:"/master/project/create"
+			,beforeHandler:function(){
+				return true;
+			}
+			,afterHandler:function(json){
+				setTimeout(function(){
+					hash.set({"service":"master/project/list"});
+				},500);
+			},
+			data:[{
+				name:"기본정보"
+				,data:
+				[[
+					{
+						title:"Project"
+						,id:"project_code"
+						,type:"input"
+						,width:200
+						,dataType:"all"
+						,must:true
+						,maxLength:20
+						,upper:true
+					},
+					{
+						title:"Name"
+						,id:"project_name"
+						,type:"input"
+						,width:760
+						,maxLength:200
+						,dataType:"all"
+						,must:true
+					}
+				]]
+			}
+		]});
+	}	
+}
+$(document).ready(base.init);

@@ -1,0 +1,15 @@
+@charset "utf-8";
+.addBtn {
+	position:absolute;
+	right:0px;
+	top:5px;
+	right:4px;
+}
+
+#form1 {
+	border-left:1px solid #EAEAEA;
+}
+
+.tui-grid-scrollbar-left-bottom {
+	border-left:none !important;
+}

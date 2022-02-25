@@ -1,0 +1,21 @@
+body {
+	padding:10px;
+	background-color:#f3f4f8;
+}
+
+.mainForm {
+	padding:10px;
+    background-color: #fff;
+	border-radius: 3px;
+    box-shadow: 0 4px 4px rgb(87 100 126 / 21%);
+}
+
+.btn.close {
+	margin-top:10px !important;
+	width:100px;	
+}
+
+.btn-area {
+	text-align:center;
+}
+

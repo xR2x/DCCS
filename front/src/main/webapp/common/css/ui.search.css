@@ -1,0 +1,268 @@
+
+.searchArea {
+	display:none;
+	position:absolute;
+	z-index:20;
+	top:0;
+	right:0px;
+	width:350px;
+	height:100%;
+	border-left:1px solid #DADADA;
+	background:#FFF;
+	padding:10px;
+	box-shadow: 0px 0px 3px rgba(0,0,0,.2);
+}
+
+.searchArea .searchHeader {
+	position:relative;
+	height:40px;
+	line-height:40px;
+	font-weight:bold;
+	color:#FFF;
+	padding-left:10px;
+	background:rgba(28,42,53,.9);
+	cursor:pointer;
+}
+
+.searchArea .searchHeader span.close-btn {
+	right:10px;
+	top:12px;
+}
+
+.searchArea .searchHeader:hover {
+	background:rgba(28,42,53,1);
+	transition: background ease 1s;
+}
+
+.searchArea .searchHeader:hover span.close-btn,
+.searchArea .searchHeader:focus span.close-btn{
+	-webkit-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+
+
+.searchArea .searchHeader:hover span.close-btn:before,
+.searchArea .searchHeader:focus span.close-btn:before,
+.searchArea .searchHeader:hover span.close-btn:after,
+.searchArea .searchHeader:focus span.close-btn:after {
+	background: rgba(255,255,255,1);
+
+}
+
+
+.searchArea .searchHeader span.close {
+	position:absolute;
+	right:10px;
+	top:13px;
+	display:inline-block;
+	width:13px;
+	height:13px;
+	background:url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAYAAABy6+R8AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyRpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDYuMC1jMDA2IDc5LmRhYmFjYmIsIDIwMjEvMDQvMTQtMDA6Mzk6NDQgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bXA6Q3JlYXRvclRvb2w9IkFkb2JlIFBob3Rvc2hvcCAyMi40IChXaW5kb3dzKSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo3MEE4QkUwMjA0OUQxMUVDQkZCQUQzNkYzMDhDNEJDMyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDo3MEE4QkUwMzA0OUQxMUVDQkZCQUQzNkYzMDhDNEJDMyI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOjcwQThCRTAwMDQ5RDExRUNCRkJBRDM2RjMwOEM0QkMzIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjcwQThCRTAxMDQ5RDExRUNCRkJBRDM2RjMwOEM0QkMzIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+NyX9RwAAAFpJREFUeNqM0EEOwCAIRFH4978zbRNjtI4AO9RHGD3eMjO3fgUDRBd87xlNB86NWA4zuEXgd6ngkRkxdYXyk7is4zeQocgyUoSWkCq0ghRAQhrggDTBBh8BBgCpvBwWeFY/AQAAAABJRU5ErkJggg==');
+}
+
+.searchArea .searchBtn {
+	height:50px;
+	line-height:45px;
+	border-bottom:1px solid #EAEAEA;
+}
+
+.searchArea .searchBtn button.clear {
+	font-weight:normal;
+	width:80px;
+}
+
+.searchArea .searchBtn button.search {
+	width:251px;
+}
+
+.searchArea .searchBody {
+	height:calc(100% - 90px);
+}
+
+.searchArea .searchBody.scrollbar-inner > .scroll-element.scroll-y {
+	width:5px !important;
+	height:calc(100% - 10px);
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+.searchArea .searchBody.scroll-element_outer {
+	border-radius:5px !important;
+}
+
+.searchArea .searchBody .scroll-element_track {
+	background-color:transparent !important;
+}
+
+.searchArea .searchBody.scrollbar-inner > .scroll-element .scroll-element_track {
+	background-color:#E0E0E0 !important;
+}
+.searchArea .searchBody.scrollbar-inner > .scroll-element .scroll-bar {
+	background-color:#666 !important;
+}
+
+
+.searchArea .searchLine {
+	padding:10px 0px;
+	border-bottom:1px solid #EAEAEA;
+}
+
+.searchArea .title {
+	display:inline-block;
+	text-align:right;
+	width:100px;
+	color:#666;
+	margin-right:10px;
+}
+
+.searchArea .input {
+	position: relative;
+	display:inline-block;
+}
+
+.searchArea .input.checkbox {
+	padding:2px 0px;
+}
+
+.searchArea .input.checkbox .switchWrap {
+	margin-top:-6px;
+}
+
+.searchArea .input span.remove {
+	display:inline-block;
+	width:0px;
+	height:28px;
+	vertical-align:middle;
+}
+
+.searchArea .input img.calendarIcon {
+	cursor:pointer;
+	position:relative;
+	z-index:2;
+	vertical-align:middle;
+	padding:6px;
+	border:1px solid #BABABA;
+	background:#FFF;
+	margin-left:-4px !important;
+	border-radius:0px 3px 3px 0px;
+}
+
+.searchArea input[type=text]{
+	border-top:1px solid #A0A0A0;
+	border-left:1px solid #A0A0A0;
+	border-right:1px solid #D0D0D0;
+	border-bottom:1px solid #D0D0D0;
+	height:32px;
+	padding:0px 5px;
+	color:#666666;
+    box-shadow: inset 0 1px 2px hsla(0,0%,4%,.06);
+	border-radius:3px;
+	background-color: rgb(255, 255, 255);
+	outline: none;
+	vertical-align:middle;
+}
+
+.searchArea input[type=text]:hover {
+	border:1px solid #A0A0A0;
+}
+
+.searchArea input[type=text]:focus {
+	box-shadow:0px 0px 1px 2px rgba(0,125,184,0.1);
+	background-color:#ECF9FF;
+}
+
+.searchArea .underline {
+  position: absolute;
+  border-radius:0px 0px 3px 3px;
+  border-bottom: 3px solid rgb(26, 115, 232);
+  bottom: 0;
+  box-sizing: border-box;
+  margin: auto;
+  opacity: 0;
+  right: 0;
+  left: 0;
+  transition: opacity 120ms ease-out, width 0ms linear 180ms;
+  width: 0;
+}
+
+.searchArea input[type=text]:focus + .underline {
+  opacity: 1;
+  transition: width 120ms ease-out, opacity 120ms ease-in;
+  width: 100%;
+}
+
+.searchArea select.customize {
+	height:32px !important;
+	border-radius:3px;
+}
+
+.searchButtonArea button img {
+	width:16px;
+	height:16px;
+}
+
+.searchArea .pasteWrap {
+	position:absolute;
+	width:200px;
+	height:200px;
+	border:1px solid #DADADA;
+	background-color:#FFF;
+	z-index:5;
+	border-radius:0px 0px 5px 5px;
+	box-shadow:0px 0px 4px 1px rgba(0,0,0,0.1);
+}
+
+.pasteArea {
+	height:165px;
+	overflow:hidden;
+}
+
+.pasteLine {
+	height:30px;
+	line-height:30px;
+	padding:0px 5px 0px 2px;
+	color:#666;
+}
+
+.pasteLine:hover {
+	background:#FAFAFA;
+}
+
+.pasteLine .del {
+	cursor:pointer;
+	display:inline-block;
+	width:18px;
+	height:30px;
+	vertical-align:middle;
+	background:url(/front/common/img/icon/close_16.png) center 10px no-repeat;
+}
+
+.pasteAction {
+	height:30px;
+	line-height:30px;
+	border-top:1px dotted #DADADA;
+	margin-top:5px;
+	color:#999;
+	text-align:center;
+	padding-right:5px;
+}
+
+.pasteAction span {
+	cursor:pointer;
+}
+
+.pasteAction span:hover {
+	text-decoration:underline;
+}
+
+.btn.multiBtn {
+	position:absolute;
+	top:0px;
+	height:32px;
+	width:30px;
+	margin-left:-2px;
+	border-radius:0px 4px 4px 0px !important;
+	box-shadow:none;
+	padding:0px 0px 0px 2px;
+	text-align:center;
+}

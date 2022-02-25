@@ -1,0 +1,38 @@
+body {
+	padding:10px;
+	background-color:#f3f4f8;
+}
+
+.addBtn {
+	position:absolute;
+	right:0px;
+	top:5px;
+	right:4px;
+}
+
+#form1 {
+	border-left:1px solid #EAEAEA;
+}
+
+.mainForm {
+	padding:10px;
+    background-color: #fff;
+	border-radius: 3px;
+    box-shadow: 0 4px 4px rgb(87 100 126 / 21%);
+}
+
+.btn-area {
+	margin-top:10px !important;
+}
+
+.btn.save {
+	width:281px;
+}
+
+.btn.close {
+	width:100px;	
+}
+
+.btn-area {
+	text-align:center;
+}

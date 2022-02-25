@@ -1,0 +1,129 @@
+<!doctype html> 
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="robots" content="index,nofollow"/>
+<title>Front</title>
+<link rel="stylesheet" href="/front/common/css/style.css">
+<link rel="stylesheet" href="/front/common/css/ui.css">
+<link rel="stylesheet" href="/front/common/css/font.css">
+<link rel="stylesheet" href="/front/common/css/button.css">
+<link rel="stylesheet" href="/front/common/css/jquery.scrollbar.css">
+<link rel="stylesheet" href="/front/common/css/jquery-ui.min.css">
+<link rel="stylesheet" href="/front/common/css/jquery.toast.css">
+<link rel="stylesheet" href="/front/common/css/ui.create.css">
+<link rel="stylesheet" href="/front/master/calendar/css/remark.css">
+<script type="text/javascript" src="/front/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.scrollbar.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.toast.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.scannerdetection.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.popup.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.from.js"></script>
+<script type="text/javascript" src="/front/common/js/tui-grid.js"></script>
+<script type="text/javascript" src="/front/common/js/common.js"></script>
+
+
+<script type="text/javascript" src="/front/master/calendar/js/remark.js"></script>
+</head>
+<body>
+	<div class="mainForm">
+		<div style="float:left;width:60%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">날짜</label>
+			<div class="inputWrap">
+				<input type="text" id="date" autocomplete="off" disabled title="SO">
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="float:left;width:40%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle">구분</label>
+			<div class="inputWrap">
+				<select class="customize" id="workCategory" onChange="base.categoryChange(this)"><option value="W">근무</option><option value="T">특근</option><option value="N">휴일</option></select>
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="clear:both;height:80px">
+			<label class="inputTitle">Remark</label>
+			<div class="inputWrap">
+				<textarea id="remark" title="Remark"></textarea>
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="float:left;width:50%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle"><span class="workType must">*</span>가동코드</label>
+			<div class="inputWrap">
+				<select class="customize" id="workType" onChange="base.getBreakType(this)"></select>
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="float:left;width:50%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+			<label class="inputTitle"><span class="workTypeFactor must">*</span>Factor (%)</label>
+			<div class="inputWrap">
+				<input type="text" id="workTypeFactor" autocomplete="off" title="Factor">
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div id="after_save">
+			<div style="float:left;width:50%;padding-right:10px;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+				<label class="inputTitle" style="">현재일 이후 일괄반영</label>
+				<label class="switchWrap" style="width:60px;margin-left:0px;text-align:center;">
+					<input type="checkbox" id="multi_save_flag" name="multi_save_flag" class="switchInput" title="현재일 이후 일괄반영">
+					<span class="switchLabel" dataon="ON" dataoff="OFF"></span>
+					<span class="switchHandle"></span>
+				</label>
+			</div>
+			<div style="float:left;width:50%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+				<label class="inputTitle" style="">휴일포함</label>
+				<label class="switchWrap" style="width:60px;margin-left:0px;">
+					<input type="checkbox" id="multi_save_holiday_flag" name="multi_save_holiday_flag" class="switchInput" title="현재일 이후 일괄반영">
+					<span class="switchLabel" dataon="ON" dataoff="OFF"></span>
+					<span class="switchHandle"></span>
+				</label>
+			</div>
+			<div style="float:left;width:50%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+				<span class="inputArea">
+					<label class="inputTitle">반영기간(From)</label>
+					<div class="inputWrap">
+						<span style="display:inline-block;">
+							<input type="text" id="date_from" style="width:135px;" autocomplete="off" datetype="date" readonly="readonly">
+							<div class="underline"></div>
+						</span><img src="/front/common/img/icon/calendar_icon.png" class="calendarIcon" target="date_from">
+						
+					</div>
+				</span>
+			</div>
+			<div style="float:left;width:50%;border-bottom:1px solid #EAEAEA;padding-bottom:10px;">
+				<span class="inputArea">
+					<label class="inputTitle">반영기간(To)</label>
+					<div class="inputWrap">
+						<span style="display:inline-block;">
+							<input type="text" id="date_to" style="width:135px;" autocomplete="off" datetype="date" readonly="readonly">
+							<div class="underline"></div>
+						</span><img src="/front/common/img/icon/calendar_icon.png" class="calendarIcon" target="date_to">
+						
+					</div>
+				</span>
+			</div>
+		</div>
+		<div style="clear:both">
+			<label class="inputTitle">가동시간</label>
+			<div class="inputWrap">
+				<input type="text" id="workTypeTime" autocomplete="off" disabled title="근무시간">
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="clear:both;height:120px">
+			<label class="inputTitle">비가동시간</label>
+			<div class="inputWrap">
+				<div id="breakType" title="휴식시간"></div>
+			</div>
+		</div>
+		
+	</div>
+	<div class="btn-group" id="save_button"><button class="btn xlarge color blue save" onclick="base.save()">저장하기</button><button class="btn xlarge close" onclick="parent.popup.close()">취소</button></div>
+</body>
+</html>

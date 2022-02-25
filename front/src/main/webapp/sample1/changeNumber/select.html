@@ -1,0 +1,62 @@
+<!doctype html> 
+<html>
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="robots" content="index,nofollow"/>
+<title>Front</title>
+<link rel="stylesheet" href="/front/common/css/style.css">
+<link rel="stylesheet" href="/front/common/css/ui.css">
+<link rel="stylesheet" href="/front/common/css/font.css">
+<link rel="stylesheet" href="/front/common/css/button.css">
+<link rel="stylesheet" href="/front/common/css/jquery.scrollbar.css">
+<link rel="stylesheet" href="/front/common/css/jquery-ui.min.css">
+<link rel="stylesheet" href="/front/common/css/jquery.toast.css">
+<link rel="stylesheet" href="/front/common/css/tui-grid.css">
+<link rel="stylesheet" href="/front/common/css/ui.create.css">
+<link rel="stylesheet" href="/front/master/changeNumber/css/select.css">
+<script type="text/javascript" src="/front/common/js/tui-grid.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.scrollbar.min.js"></script>
+<script type="text/javascript" src="/front/common/js/jquery.toast.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.popup.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.create.js"></script>
+<script type="text/javascript" src="/front/common/js/ui.form.js"></script>
+<script type="text/javascript" src="/front/common/js/common.js"></script>
+<script type="text/javascript" src="/front/master/changeNumber/js/select.js"></script>
+</head>
+<body>
+	<div class="mainForm">
+		<div class="ment"><img src="/front/common/img/icon/information-white.png">호기관리 대상인 자재입니다. 아래 목록에서 관리할 호기를 선택해주세요.</div>
+		<div style="float:left;width:40%;padding-right:10px;padding-bottom:10px;">
+			<label class="inputTitle" style="height:19px;">Type Version</label>
+			<div class="inputWrap">
+				<select class="customize" id="tv" title="Type Version"></select>
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="float:left;width:40%;padding-right:10px;padding-bottom:10px;">
+			<label class="inputTitle" style="height:19px;">Effectivity</label>
+			<div class="inputWrap">
+				<input type="text" id="eff" autocomplete="off" title="Type Version">
+				<div class="underline"></div>
+			</div>
+		</div>
+		<div style="float:left;width:20%;padding-bottom:10px;margin-top:3px;">
+			<label class="inputTitle" style="height:11px;"></label>
+			<div class="inputWrap">
+				<button class="btn large" onclick="base.load()" style="width:100%">검색</button>
+			</div>
+		</div>	                      
+		<div style="clear:both;">
+			<h1 class="divisionTitle" target="form1">목록</h1>
+			<div id="form1"></div>  
+		</div>
+	</div>
+	<div class="btn-area"><button class="btn xlarge close" onclick="parent.popup.close()">취소</button></div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+@charset "UTF-8";
+* {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+*:before,
+*:after {
+  -webkit-box-sizing: border-box;
+     -moz-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+html {
+	height:100%;
+}
+
+body {
+    height: 100%;
+    margin: 0;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+	font-size:12px;
+	font-family:Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif;
+}
+
+body,div,button,dd,dl,dt,fieldset,form,h1,h2,h3,h4,h5,h6,input,legend,li,ol,p,select,table,td,textarea,th,ul {
+	margin:0;
+	padding:0;
+}
+
+button,input,select,table,textarea {
+	font-size:12px;
+	font-family:Dotum,'돋움',Helvetica,"Apple SD Gothic Neo",sans-serif
+}
+
+fieldset,img {
+	border:0
+}
+
+ol,ul,li {
+	list-style:none
+}
+
+address,em {
+	font-style:normal
+}
+
+a {
+	text-decoration:none
+}
+
+a:hover {
+	text-decoration:underline
+}
+
+iframe {
+	overflow:hidden;
+	margin:0;
+	padding:0;
+	border:0
+}
+
+table {
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+
+td,
+th {
+	padding: 0;
+}
+
+img {
+	border: 0;
+	vertical-align: middle;
+}
+
+tr,
+img {
+	page-break-inside: avoid;
+}

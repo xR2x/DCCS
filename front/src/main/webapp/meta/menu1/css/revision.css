@@ -1,0 +1,20 @@
+body {
+	padding:10px;
+	background-color:#f3f4f8;
+}
+
+.mainForm {
+	padding:10px;
+    background-color: #fff;
+	border-radius: 3px;
+    box-shadow: 0 4px 4px rgb(87 100 126 / 21%);
+}
+
+#form1 {
+	border-left:1px solid #EAEAEA !important;
+}
+
+.btn-area {
+	margin-top:10px !important;
+	text-align:center;
+}

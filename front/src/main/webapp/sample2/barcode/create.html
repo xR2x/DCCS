@@ -1,0 +1,47 @@
+<script src="/front/common/js/JsBarcode.all.min.js"></script>
+<div id="createWrap">
+	<div class="addArea">
+		<div class="addTabArea">
+			<button class="tab on" type="w">작업장</button><button class="tab" type="u">작업자</button><button class="tab" type="n">일반</button>
+		</div>
+		<div class="searchBox mainForm">
+			<!--<div class="btnArea"><button class="btn large color blue"><img src="/front/common/img/icon/document-search-result.png">검색해서 추가</button></div>-->
+			<div class="inputWrap">
+				<input type="text" id="userInput" autocomplete="off" maxlength="20" placeholder="작업장 코드를 입력해주세요." oninput="base.keyInput(this)">
+				<div class="underline"></div>
+			</div>
+			<button class="btn large color blue" onclick="base.check()">추가</button>
+			<img id="tmpBarcode" style="height:36px"></img>
+			<button class="btn large print" onclick="base.print()"><img src="/front/common/img/icon/printer.png">인쇄하기</button>
+		</div>
+		<div class="subArea mainForm">
+			<span class="area">바코드 높이</span>
+			<span class="area">
+				<div class="inputWrap">
+					<div style="position: relative;">
+						<input type="text" id="height" maxlength="3" autocomplete="off" value="80">
+						<div class="underline"></div>
+					</div>
+				</div>
+			</span>
+			<span class="area">텍스트 표시 여부</span>
+			<span class="area" style="position: relative; display: inline-block; vertical-align: middle;">
+				<div class="inputWrap" style="margin-top:-3px">
+					<label class="switchWrap" style="width: 66px;">
+						<input type="checkbox" id="showText" name="sequence_operation" class="switchInput" checked>
+						<span class="switchLabel" dataon="ON" dataoff="OFF"></span>
+						<span class="switchHandle"></span>
+					</label>
+				</div>
+			</span>
+			<span class="area"><img src="/front/common/img/icon/information-white2.png">바코드를 더블클릭하면 <strong>삭제</strong>됩니다.<img src="/front/common/img/icon/information-white2.png">바코드를 드래그하여 위치를 변경할 수 있습니다.</span>
+			<button class="btn middle allDelete color red" onclick="base.deleteAll()"><img src="/front/common/img/icon/del_16.png">모두삭제</button>
+		</div>
+	</div>
+	<div class="canvasArea">
+		<div class="alertArea">
+			<div class="mentBox">바코드를 추가하여 주시기 바랍니다.</div>
+		</div>
+		<div class="canvasAreaInner scrollbar-inner"></div>
+	</div>
+</div>

@@ -1,0 +1,82 @@
+var base = {
+	init:function(){
+		base.load();
+	},
+	load:function(){
+		var param = {
+			seq:hash.get("seq")
+		};
+		$.ajax({ 
+			type:"POST",
+			dataType:"json",
+			url:"/pop/loss/read",
+			data:param,
+			success:function(json, status, res){
+				try{
+					base.set(json);
+				}catch(e){
+					console.log(e);
+				}
+			},
+			error:function(e){
+				console.log(e);
+			}   
+		});
+	},
+	set:function(data){
+		var formData = data.data;
+		createForm.set({
+			width:1000
+			,title:"비가동 수정"
+			,createBtnName:"수정하기"
+			,divisionType:null
+			,service:"/pop/loss/update"
+			,formData:formData
+			,defaultValue:{
+				seq:hash.get("seq")
+			}
+			,beforeHandler:function(form){
+				return true;
+			}
+			,afterHandler:function(json){
+				setTimeout(function(){
+					location.reload();
+				},500);
+			},
+			data:[{
+				name:"기본정보"
+				,data:
+				[[
+					{
+						title:"Type"
+						,id:"type"
+						,type:"select"
+						,width:200
+						,data:common.getCommonCode
+						,dataParam:{"type":"loss"}
+						,must:true
+						,disable:true
+					},
+					{
+						title:"Name"
+						,id:"name"
+						,type:"input"
+						,width:760
+						,dataType:"all"
+						,must:true
+					}
+				],
+				[	
+					{
+						title:"Remark"
+						,id:"remark"
+						,type:"textarea"
+						,width:970
+						,height:100
+					}			
+				]]
+			}
+		]});
+	}	
+}
+$(document).ready(base.init);

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.front.FrontMapper">
+  
+	<select id="systemMenu" resultType="java.util.HashMap">
+		SELECT
+			*
+			,(SELECT COUNT(0) FROM front.system_menu WHERE parent = t1.code) AS child_count
+		FROM 
+			front.system_menu AS t1
+		ORDER BY code,depth
+	</select>
+
+	<select id="userLogin" resultType="java.util.HashMap">
+		SELECT
+			company
+			,user_id
+			,name
+			,department
+			,position
+			,status
+			,tel
+			,mobile
+			,email
+		FROM
+			core.master.user u
+		WHERE
+			user_id = #{user_id}
+		AND password = CRYPT(#{password},password)
+	</select>
+  
+
+</mapper>

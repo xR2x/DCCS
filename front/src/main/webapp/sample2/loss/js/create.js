@@ -1,0 +1,54 @@
+var base = {
+	init:function(){
+		base.set();
+	},
+	set:function(){
+		createForm.set({
+			width:1000
+			,title:"비가동 생성"
+			,divisionType:null
+			,service:"/pop/loss/create"
+			,beforeHandler:function(){
+				return true;
+			}
+			,afterHandler:function(json){
+				setTimeout(function(){
+					hash.set({"service":"pop/loss/list"});
+				},500);
+			},
+			data:[{
+				name:"기본정보"
+				,data:
+				[[
+					{
+						title:"Type"
+						,id:"type"
+						,type:"select"
+						,width:200
+						,data:common.getCommonCode
+						,dataParam:{"type":"loss"}
+						,must:true
+					},
+					{
+						title:"Name"
+						,id:"name"
+						,type:"input"
+						,width:760
+						,dataType:"all"
+						,must:true
+					}
+				],
+				[	
+					{
+						title:"Remark"
+						,id:"remark"
+						,type:"textarea"
+						,width:970
+						,height:100
+					}			
+				]]
+			}
+		]});
+	}	
+}
+$(document).ready(base.init);

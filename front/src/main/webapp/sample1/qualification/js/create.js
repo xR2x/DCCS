@@ -1,0 +1,45 @@
+var base = {
+	init:function(){
+		base.set();
+	},
+	set:function(){
+		createForm.set({
+			width:500
+			,title:"치공구/Tool 마스터 생성"
+			,divisionType:null
+			,service:"/master/tool/create"
+			,beforeHandler:function(){
+				alert($("#plant").length);
+			}
+			,afterHandler:function(json){
+				setTimeout(function(){
+					hash.set({"service":"/master/tool/list"});
+				},500);
+			},
+			data:[{
+				name:"기본정보"
+				,data:
+				[[
+					{
+						title:"Project"
+						,id:"project_code"
+						,type:"input"
+						,width:470
+						,dataType:"all"
+						,must:true
+					}
+				],[
+					{
+						title:"Name"
+						,id:"project_name"
+						,type:"input"
+						,width:470
+						,dataType:"all"
+						,must:true
+					}
+				]]
+			}
+		]});
+	}	
+}
+$(document).ready(base.init);
