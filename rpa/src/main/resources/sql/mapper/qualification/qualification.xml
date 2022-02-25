@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.qualification.QualificationMapper">
+
+	<sql id="qualificationList_Condition">			                   
+		<if test="worker_name != null and worker_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = q.worker) LIKE master.searchType(#{worker_name})
+		</if> 	
+		<if test="type != null and type != ''">
+			AND "type" = #{type}
+		</if> 	      
+		<if test="no != null and no != ''">
+			AND "no" LIKE master.searchType(#{no})
+		</if>   
+		<if test="name != null and name != ''">
+			AND "name" LIKE master.searchType(#{name})
+		</if>   
+		<if test="remark != null and remark != ''">
+			AND remark LIKE master.searchType(#{remark})	
+		</if>                      
+		<if test="expiration_date != null and expiration_date != ''">
+			AND expiration_date = #{expiration_date}
+		</if> 			          
+	</sql>
+
+	<select id="qualificationList" resultType="java.util.HashMap">
+		SELECT 
+			seq
+			,worker
+			,(SELECT "name" FROM master.user WHERE user_id = q.worker) AS worker_name
+			,"type"
+			,(SELECT code_name FROM master.common_code WHERE company = q.company AND type = 'qualification_type' AND code = q.type) AS type_name
+			,"no"
+			,"name"
+			,remark
+			,expiration_date
+			,creator
+			,(SELECT "name" FROM master.user WHERE user_id = q.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI') AS create_date		
+		FROM
+			master.qualification q
+		WHERE
+			COMPANY = #{company}
+		<include refid="qualificationList_Condition" />
+		AND deletion_flag IS NULL	
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>					  
+	</select>
+
+	<select id="qualificationListCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM
+			master.qualification q
+		WHERE
+			COMPANY = #{company}                         
+		<include refid="qualificationList_Condition" />			  
+		AND deletion_flag IS NULL	
+	</select>
+
+	<select id="getQualificationCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM
+			master.qualification q
+		WHERE
+			company = #{company}   
+		AND worker	= #{worker}
+		AND "type"	= #{type}
+		AND deletion_flag IS NULL	
+	</select>
+	
+	<select id="getQualificationDeleteCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM
+			master.qualification q
+		WHERE
+			company = #{company}   
+		AND worker	= #{worker}
+		AND "type"	= #{type}
+		AND deletion_flag IS NOT NULL	
+	</select>  
+  					
+	<insert id="qualificationCreate">							  
+		INSERT INTO master.qualification(
+			company
+			,worker
+			,"type"
+			,"no"
+			,"name"
+			,remark
+			,expiration_date
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{worker}
+			,#{type}
+			,#{no}
+			,#{name}
+			,#{remark}
+			,#{expiration_date}
+			,#{user_id}
+			,NOW()	
+		)
+	</insert>   
+
+	<update id="qualificationModify">
+		UPDATE 
+			master.qualification
+		SET 
+			no					= #{no}
+			,name				= #{name}
+			,remark				= #{remark}
+			,expiration_date	= #{expiration_date}
+			,deletion_flag		= null
+		WHERE 
+			company				= #{company}
+		AND worker				= #{worker}
+		AND "type"				= #{type} 
+	</update>
+
+	<update id="qualificationDelete">
+		UPDATE 
+			master.qualification
+		SET 
+			deletion_flag		= 'X'
+		WHERE 
+			company				= #{company}
+		AND worker				= #{worker}
+		AND "type"				= #{type}    
+	</update>
+
+</mapper>

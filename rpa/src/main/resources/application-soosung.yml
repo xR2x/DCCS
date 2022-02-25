@@ -1,0 +1,51 @@
+server:
+  port: 9092
+  servlet:
+    context-path: /master
+    session:
+      cookie:
+        path: /        
+  error:
+    whitelabel:
+      enabled: false
+
+logging:
+  config: classpath:log4j2-prod.xml
+  
+spring: 
+  config:
+    activate:
+      on-profile: soosung
+  redis:
+    host: ip-10-11-10-3.ap-northeast-2.compute.internal
+    port: 6379
+  session:
+    timeout: 60000
+    store-type: redis
+    redis:
+      flush-mode: on-save
+      namespace: spring:session
+  devtools: 
+    livereload:
+      enabled: true    
+  datasource:
+    driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:postgresql://soosung.c2i01xjfrd5g.ap-northeast-2.rds.amazonaws.com:5432/core
+    username: kaicore    
+    password: tntjd12#    
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+
+file:
+  path: /data/
+  
+gateway:
+  url: http://ip-10-11-10-3.ap-northeast-2.compute.internal/  
+    
+mybatis:
+  mapper-locations: classpath:sql/mapper/**/**.xml
+  
+
+    

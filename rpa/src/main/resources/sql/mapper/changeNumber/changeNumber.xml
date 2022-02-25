@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.changeNumber.ChangeNumberMapper"> 
+
+	<sql id="changeNumberCondition">			
+		<if test="seq != null and seq != ''">
+			AND c.change_no = ${seq}
+		</if>
+		<if test="change_no != null and change_no != ''">
+			AND c.change_no = ${change_no}
+		</if>
+		<if test="material != null and material != ''">
+			AND c.material LIKE master.searchType(#{material})
+		</if>   
+		<if test="plant != null and plant != ''">
+			AND c.plant LIKE master.searchType(#{plant})
+		</if> 		
+		<if test="tv != null and tv != ''">
+			AND c.tv LIKE master.searchType(#{tv})
+		</if> 		      
+		<if test="eff != null and eff != ''">
+			AND (#{eff}::INT BETWEEN c.eff_from AND c.eff_to)
+		</if> 		      
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = c.creator) LIKE master.searchType(#{creator_name}) 
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND CAST(c.create_date AS DATE) <![CDATA[>=]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND CAST(c.create_date AS DATE) <![CDATA[<=]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+	</sql>
+
+	<select id="changeNumberRead" resultType="java.util.HashMap">
+		SELECT 
+			change_no
+			,material
+			,plant
+			,tv
+			,eff_from
+			,eff_to
+			,remark
+			,creator
+			,(SELECT "name" FROM master.user WHERE user_id = c.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI') AS create_date	
+		FROM
+			master.change_number c
+		WHERE
+			company = #{company}					 
+		<include refid="changeNumberCondition" />
+		AND deletion_flag IS NULL		
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>					
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>	
+	</select>
+
+	<select id="changeNumberCount" resultType="int">		  
+		SELECT 
+			COUNT(0)
+		FROM
+			master.change_number c
+		WHERE
+			company = #{company}	
+		<include refid="changeNumberCondition" />	
+		AND deletion_flag IS NULL	
+	</select>  
+
+	<insert id="changeNumberCreate">							  
+		INSERT INTO master.change_number(
+			company
+			,material
+			,plant
+			,tv
+			,eff_from
+			,eff_to
+			,remark
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{material}
+			,#{plant}
+			,#{tv}
+			,CAST(#{eff_from} AS INT)
+			,CAST(#{eff_to} AS INT)
+			,#{remark}
+			,#{user_id}
+			,NOW()
+		)
+	</insert>
+
+	<update id="changeNumberUpdate">
+		UPDATE 
+			master.change_number
+		SET
+			tv = #{tv} 
+			,eff_from = CAST(#{eff_from} AS INT)
+			,eff_to = CAST(#{eff_to} AS INT)
+			,remark = #{remark} 
+		WHERE
+		   	company = #{company} 
+		AND	change_no = CAST(#{change_no} AS INT)			
+	</update>
+
+	<update id="changeNumberDelete">
+		UPDATE 
+			master.change_number
+		SET
+			deletion_flag = 'X'
+		WHERE
+		   	company = #{company} 
+		AND	change_no = CAST(#{change_no} AS INT)			
+	</update>
+
+	<select id="getMaterialTvEffFlag" resultType="string">		  
+		SELECT 
+			coalesce(tv_eff_flag, '') 
+		FROM 
+			master.material_plant
+		WHERE
+			company = #{company} 
+		AND	material = #{material} 
+		AND plant = #{plant}
+		AND deletion_flag IS NULL		
+	</select>  
+
+</mapper>

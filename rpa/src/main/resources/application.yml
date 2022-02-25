@@ -1,0 +1,51 @@
+server:
+  port: 9092
+  servlet:
+    context-path: /rpa
+    session:
+      cookie:
+        path: /        
+  error:
+    whitelabel:
+      enabled: false
+
+logging:
+  config: classpath:log4j2.xml
+  
+spring: 
+  config:
+    activate:
+      on-profile: default
+  redis:
+    host: localhost
+    port: 6379
+  session:
+    timeout: 60000
+    store-type: redis
+    redis:
+      flush-mode: on-save
+      namespace: spring:session
+  devtools: 
+    livereload:
+      enabled: true    
+  datasource:
+    driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+    url: jdbc:log4jdbc:postgresql://localhost:5432/postgres
+    password: 1234
+    username: postgres
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      max-request-size: 200MB
+
+file:
+  path: C:\DCCS(Digital Cluster Collaborate System)\workspace\smartcore\data\
+  
+gateway:
+  url: http://localhost:9090/  
+    
+mybatis:
+  mapper-locations: classpath:sql/mapper/**/**.xml
+  
+
+    

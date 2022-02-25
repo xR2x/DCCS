@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.factoryCalendar.WorkTypeMapper"> 
+
+	<sql id="workTypeReadCondition">
+		<if test="seq != null and seq != ''">
+			AND seq = ${seq}
+		</if>
+		<if test="work_type != null and work_type != ''">
+			AND work_type LIKE master.searchType(#{work_type})
+		</if>           
+		<if test="remark != null and remark != ''">
+			AND remark LIKE master.searchType(#{remark})
+		</if>
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = t1.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND t1.create_date <![CDATA[>=]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND t1.create_date <![CDATA[<=]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+	</sql>
+
+	<select id="workTypeRead" resultType="java.util.HashMap">
+		SELECT
+			seq
+			,work_type
+			,remark
+			,concat(substring(time_from,1,2),':',substring(time_from,3,2)) AS time_from
+			,concat(substring(time_to,1,2),':',substring(time_to,3,2)) AS time_to 
+			,(SELECT "name" FROM master.user WHERE user_id = t1.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI') AS create_date
+			,substring(time_from,1,2) AS time_from1
+			,substring(time_from,3,2) AS time_from2
+			,substring(time_to,1,2) AS time_to1
+			,substring(time_to,3,2) AS time_to2
+		FROM
+			master.factory_calendar_work_type t1
+		WHERE
+			company = #{company}
+		<include refid="workTypeReadCondition" />
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>			  
+	</select>
+
+	<select id="workTypeCount" resultType="int">		  
+		SELECT 
+			COUNT(0) 
+		FROM 
+			master.factory_calendar_work_type t1
+		WHERE
+			company = #{company}
+		<include refid="workTypeReadCondition" />
+	</select>  
+
+	<select id="workTypeCreate" resultType="int">							  
+		INSERT INTO master.factory_calendar_work_type(
+			company
+			,work_type
+			,remark
+			,time_from
+			,time_to
+			,total_time
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{work_type}
+			,#{remark}
+			,concat(#{time_from1},'',#{time_from2},'00')
+			,concat(#{time_to1},'',#{time_to2},'00')
+			,#{total_time}
+			,#{user_id}
+			,NOW()
+		) RETURNING seq
+	</select>
+
+	<update id="workTypeUpdate">
+		UPDATE 
+			master.factory_calendar_work_type
+		SET 
+			remark		= #{remark} 
+			,time_from	= concat(#{time_from1},'',#{time_from2},'00')
+			,time_to    = concat(#{time_to1},'',#{time_to2},'00')
+			,total_time = #{total_time}
+		WHERE 
+			company 	= #{company} 
+		AND work_type	= #{work_type} 
+	</update>
+
+	<delete id="workTypeDelete">
+		DELETE FROM master.factory_calendar_work_type
+		WHERE
+			company = #{company} 
+		AND work_type = #{work_type} 	 
+	</delete>
+
+	<sql id="breakTypeReadCondition">
+		<if test="work_type_seq != null and work_type_seq != ''">
+			AND work_type_seq = CAST(#{work_type_seq} AS INT)
+		</if>           
+		<if test="remark != null and remark != ''">
+			AND remark LIKE master.searchType(#{remark})	
+		</if>
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = t1.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND t1.create_date <![CDATA[>=]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND t1.create_date <![CDATA[<=]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+	</sql>
+
+	<select id="breakTypeRead" resultType="java.util.HashMap">
+		SELECT
+			seq
+			,remark
+			,concat(substring(time_from,1,2),':',substring(time_from,3,2)) AS time_from
+			,concat(substring(time_to,1,2),':',substring(time_to,3,2)) AS time_to 
+			,(SELECT "name" FROM master.user WHERE user_id = t1.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI') AS create_date
+			,substring(time_from,1,2) AS time_from1
+			,substring(time_from,3,2) AS time_from2
+			,substring(time_to,1,2) AS time_to1
+			,substring(time_to,3,2) AS time_to2
+		FROM
+			master.factory_calendar_break_type t1
+		WHERE
+			company = #{company}
+		<include refid="breakTypeReadCondition" />
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}, no
+		</if>
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>	
+	</select>
+	
+	<!--
+	<select id="breakTypeList" resultType="java.util.HashMap">
+		SELECT
+			DISTINCT break_type
+		FROM
+			master.factory_calendar_break_type t1
+		WHERE
+			company = #{company}
+		ORDER BY break_type
+	</select>
+	-->
+
+	<select id="breakTypeCount" resultType="int">		  
+		SELECT 
+			COUNT(0) 
+		FROM 
+			master.factory_calendar_break_type t1
+		WHERE
+			company = #{company}
+		<include refid="breakTypeReadCondition" />
+	</select>  
+
+	<insert id="breakTypeCreate">							  
+		INSERT INTO master.factory_calendar_break_type(
+			 company
+			,work_type_seq
+			,remark
+			,time_from
+			,time_to
+			,second
+			,creator
+			,create_date
+			
+		) VALUES (
+			#{company}
+			,CAST(#{work_type_seq} AS INT)
+			,#{remark}
+			,concat(#{time_from1},'',#{time_from2},'00')
+			,concat(#{time_to1},'',#{time_to2},'00')
+			,#{second}
+			,#{user_id}
+			,NOW()
+		)
+	</insert>
+	
+	<!--
+	<update id="breakTypeUpdate">
+		UPDATE 
+			master.factory_calendar_break_type
+		SET 
+			remark		= #{remark} 
+			,time_from	= concat(#{time_from1},'',#{time_from2},'00')
+			,time_to    = concat(#{time_to1},'',#{time_to2},'00')
+			,second		= #{second}
+		WHERE 
+			company 	= #{company} 
+		AND break_type	= #{break_type} 
+	</update>
+
+	<delete id="breakTypeDelete">
+		DELETE FROM master.factory_calendar_break_type
+		WHERE
+			company = #{company} 
+		AND seq = CAST(#{seq} AS INT)
+	</delete>
+	-->
+	
+	<delete id="breakTypeDeleteAll">
+		DELETE FROM master.factory_calendar_break_type
+		 WHERE company = #{company} 
+		   AND work_type_seq = CAST(#{seq} AS INT)
+	</delete>
+  
+</mapper>

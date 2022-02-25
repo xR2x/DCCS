@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.user.UserMapper">
+
+	<sql id="userReadCondition">
+		<if test="seq != null and seq != ''">
+			AND seq = ${seq}
+		</if>
+		<if test="id != null and id != ''">
+			AND user_id LIKE master.searchType(#{id})
+		</if> 		
+		<if test="name != null and name != ''">
+			AND name LIKE master.searchType(#{name})
+		</if> 
+		<if test="department != null and department != ''">
+			AND department LIKE master.searchType(#{department})
+		</if> 
+		<if test="status != null and status != ''">
+			AND status = #{status}
+		</if> 
+		<if test="tel != null and tel != ''">
+			AND tel LIKE master.searchType(#{tel})
+		</if> 
+		<if test="email != null and email != ''">
+			AND email LIKE master.searchType(#{email})
+		</if>
+		<if test="password != null and password != ''">
+			AND password = CRYPT(#(password),password)
+		</if>
+		<if test="position != null and position != ''">
+			AND position LIKE master.searchType(#{position})	
+		</if>
+		<if test="mobile != null and mobile != ''">
+			AND mobile LIKE master.searchType(#{mobile})	
+		</if>
+	</sql>
+  
+	<select id="userRead" resultType="java.util.HashMap">
+		SELECT
+			seq
+			,company
+			,user_id
+			,name
+			,department
+			,position
+			,status
+			,(SELECT code_name FROM master.common_code WHERE company IN ('COMMON', u.company) AND type = 'user_status' AND code = u.status) AS status_name
+			,tel
+			,mobile
+			,email
+			,user_id AS id
+		FROM
+			master.user u
+		WHERE
+			company = #{company}
+		<include refid="userReadCondition" />
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>
+
+	</select>
+
+	<select id="userCount" resultType="int">
+
+		SELECT
+			COUNT(0)
+		FROM
+			master.user
+		WHERE
+			company = #{company}
+		<include refid="userReadCondition" />
+
+	</select>
+
+	<select id="getUserCount" resultType="int">
+
+		SELECT
+			COUNT(0)
+		FROM
+			master.user
+		WHERE
+			company = #{company}
+		AND user_id = #{user_id}
+
+	</select>
+
+	<insert id="userCreate">
+
+		INSERT INTO master.user (
+			company
+			,user_id
+			,name
+			,password
+			,department
+			,position
+			,status
+			,tel
+			,mobile
+			,email
+		) values (
+			#{company}
+			,#{id}
+			,#{name}
+			,CRYPT(#{password}, GEN_SALT('md5'))
+			,#{department}
+			,#{position}
+			,'1'
+			,#{tel}
+			,#{mobile}
+			,#{email}
+		)
+
+	</insert>
+
+	<update id="userUpdate">
+
+		UPDATE 
+			master.user
+		SET
+			name 		= #{name}
+			,department = #{department} 
+			,position	= #{position} 
+			,tel 		= #{tel} 
+			,mobile		= #{mobile}
+			,email		= #{email}
+			<if test="password != null and password != ''">
+				,password = CRYPT(#{password}, GEN_SALT('md5'))
+			</if>
+		WHERE
+			company 	= #{company} 
+		AND user_id 	= #{id} 
+
+	</update>
+
+	<update id="userDelete">
+
+		UPDATE 
+			master.user
+		SET
+			status = '0'
+		WHERE
+			company 	= #{company} 
+		AND user_id 	= #{id} 
+
+	</update>
+
+	<select id="getDepartment" resultType="java.util.HashMap">
+		SELECT 
+			department
+		FROM 
+			master.user
+		WHERE
+			company = #{company}
+		AND	status = '1'
+		GROUP BY department
+		ORDER BY department
+	</select>			   
+  
+</mapper>

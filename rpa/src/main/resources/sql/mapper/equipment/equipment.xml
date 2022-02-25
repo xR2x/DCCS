@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.equipment.EquipmentMapper">
+
+	<sql id="equipmentReadCondition">		
+		<if test="equipment_code != null and equipment_code != ''">
+			AND e.equipment_code LIKE master.searchType(#{equipment_code})
+		</if> 
+		<if test="equipment_name != null and equipment_name != ''">
+			AND e.equipment_name LIKE master.searchType(#{equipment_name})
+		</if>                     
+		<if test="spindle != null and spindle != ''">
+			AND e.spindle = CAST(#{spindle} AS INT)
+		</if> 					  
+		<if test="remark != null and remark != ''">
+			AND e.remark LIKE master.searchType(#{remark})
+		</if>        
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = e.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND e.create_date <![CDATA[>]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND e.create_date <![CDATA[<]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+		<if test="workcenter != null and workcenter != ''">
+			AND (SELECT workcenter FROM master.workcenter_equipment WHERE equipment_seq = e.seq) LIKE master.searchType(#{workcenter})
+		</if>          
+		<if test="target_material != null and target_material != ''">
+			AND (CASE WHEN (SELECT COUNT(0) FROM master.leadtime t1, master.leadtime_equipment t2 WHERE t1.seq = t2.leadtime_seq AND t1.material = #{target_material} AND t1.plant = #{target_plant} AND t1.gop = #{target_gop} AND t1.workcenter = #{workcenter}) <![CDATA[>]]> 0 THEN (SELECT count(0) FROM master.leadtime t1, master.leadtime_equipment t2 WHERE t1.seq = t2.leadtime_seq AND t1.material = #{target_material} AND t1.plant = #{target_plant} AND t1.gop = #{target_gop} AND t1.workcenter = #{workcenter} AND t2.equipment_seq = e.seq) ELSE 1 END) <![CDATA[>]]> 0 
+		</if> 
+		<if test="seq != null and seq != ''">
+			AND e.seq = ${seq}
+		</if> 		
+		
+	</sql>
+  
+	<select id="equipmentRead" resultType="java.util.HashMap">
+		SELECT 
+			seq
+			,equipment_code
+			,equipment_name
+			,spindle
+			,remark
+			,(SELECT workcenter FROM master.workcenter_equipment WHERE equipment_seq = e.seq) AS workcenter
+			,(SELECT "name" FROM master.workcenter WHERE company = e.company AND workcenter = (SELECT workcenter FROM master.workcenter_equipment WHERE equipment_seq = e.seq)) AS workcenter_name
+			,(SELECT "name" FROM master.user WHERE user_id = e.creator) AS creator_name
+			,to_char(e.create_date, 'YYYY-MM-DD HH24:MI') AS create_date
+			<if test="use_check != null and use_check != ''">
+				,(SELECT COUNT(0) FROM master.workcenter_equipment WHERE company = e.company AND equipment_seq = e.seq AND deletion_flag IS NULL) AS use_count
+			</if>
+			<if test="wc_spindle != null and wc_spindle != ''">
+				,(SELECT spindle FROM master.workcenter_equipment WHERE company = e.company AND equipment_seq = e.seq AND workcenter = (SELECT workcenter FROM master.workcenter_equipment WHERE equipment_seq = e.seq) AND deletion_flag IS NULL) AS wc_equipment_spindle
+			</if>
+		FROM 
+			master.equipment e
+		WHERE
+			company = #{company}
+		AND deletion_flag IS NULL	
+		<include refid="equipmentReadCondition" />
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>
+	</select>
+
+	<select id="equipmentCount" resultType="int">
+		SELECT 
+			COUNT(0)
+		FROM 
+			master.equipment e
+		WHERE
+			company = #{company}
+		AND deletion_flag IS NULL	
+		<include refid="equipmentReadCondition" />	
+	</select>
+
+	<insert id="equipmentCreate" >
+		INSERT INTO master.equipment(
+			company
+			,equipment_code
+			,equipment_name
+			,spindle
+			,remark
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{equipment_code}
+			,#{equipment_name}
+			,CAST(#{spindle} AS INT)
+			,#{remark}
+			,#{user_id}
+			,NOW()			
+		)	
+	</insert>  
+
+	<update id="equipmentUpdate" >
+		UPDATE 
+			master.equipment
+		SET 
+			equipment_name = #{equipment_name}
+			,spindle = CAST(#{spindle} AS INT)
+			,remark = #{remark}
+		WHERE
+			company = #{company}
+		AND seq = CAST(#{seq} AS INT)
+	</update> 
+	
+	<update id="equipmentDelete" >
+		UPDATE 
+			master.equipment
+		SET 
+			deletion_flag = 'X'
+		WHERE
+			company = #{company}
+		AND seq = CAST(#{seq} AS INT)
+	</update> 
+
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.orderCategory.OrderCategoryMapper"> 
+
+	<sql id="orderCategoryReadCondition">		
+		<if test="type != null and type != ''">
+			AND c.type = #{type}
+		</if>   
+		<if test="category != null and category != ''">
+			AND c.category LIKE master.searchType(#{category})
+		</if> 
+		<if test="delimiter != null and delimiter != ''">
+			AND c.delimiter LIKE master.searchType(#{delimiter})
+		</if> 	 		
+		<if test="name != null and name != ''">
+			AND c.name LIKE master.searchType(#{name})
+		</if>    	
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = c.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND c.create_date <![CDATA[>]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND c.create_date <![CDATA[<]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+	</sql>
+  
+	<select id="orderCategoryRead" resultType="java.util.HashMap">
+		SELECT 
+			"type"
+			,category
+			,"delimiter"
+			,"name"
+			,rework
+			,inventory
+			,category_seq
+			,form_type	
+			,(SELECT "name" FROM master.user WHERE user_id = c.creator) AS creator_name
+			,to_char(c.create_date, 'YYYY-MM-DD HH24:MI') AS create_date	
+		FROM 
+			master.order_category c
+		WHERE
+			company IN ('COMMON', #{company})
+		<include refid="orderCategoryReadCondition" />
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>
+
+	</select>
+
+	<select id="orderCategoryCount" resultType="int">
+		SELECT 
+			COUNT(0)
+		FROM 
+			product.shop_order o
+			INNER JOIN
+			product.shop_order_status s
+			ON
+				o.seq = s.so_seq
+		WHERE
+			o.company = #{company}
+		AND o.deletion_flag IS NULL
+		<include refid="orderCategoryReadCondition" />	
+	</select>	
+  
+</mapper>

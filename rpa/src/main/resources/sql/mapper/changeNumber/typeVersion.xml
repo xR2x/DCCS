@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.changeNumber.TypeVersionMapper"> 
+
+	<sql id="typeVersionReadCondition">
+		<if test="seq != null and seq != ''">
+			AND seq = ${seq}
+		</if> 
+		<if test="tv != null and tv != ''">
+			AND tv LIKE master.searchType(#{tv})   	
+		</if> 
+	</sql>
+
+	<select id="typeVersionRead" resultType="java.util.HashMap">
+		SELECT
+			seq
+			,company
+			,tv
+			,creator
+			,(SELECT "name" FROM master.user WHERE user_id = v.creator) AS creator_name
+			,to_char(create_date, 'YYYY-MM-DD HH24:MI') AS create_date                 
+			,0 AS use_count
+		FROM 
+			master.type_version v
+		WHERE
+			company = #{company}
+		<include refid="typeVersionReadCondition" />			  
+		AND deletion_flag IS NULL
+	</select>
+
+	<select id="getDeleteTypeVersionCount" resultType="int">		  
+		SELECT
+			COUNT(0)
+		FROM 
+			master.type_version v
+		WHERE
+			company = #{company}
+		AND tv = #{tv}
+		AND deletion_flag IS NOT NULL
+	</select> 
+
+	<insert id="typeVersionCreate">							  
+		INSERT INTO master.type_version(
+			company
+			,tv
+			,creator
+			,create_date
+		) VALUES (
+			#{company}
+			,#{tv}
+			,#{user_id}
+			,NOW()	
+		)
+	</insert>
+
+	<delete id="typeVersionUpdate">
+		UPDATE 
+			master.type_version
+		SET 
+			deletion_flag = null
+		WHERE
+			company = #{company} 
+		AND tv = #{tv}
+	</delete>
+
+	<delete id="typeVersionDelete">
+		UPDATE 
+			master.type_version
+		SET 
+			deletion_flag = 'X'
+		WHERE
+			company = #{company} 
+		AND seq = CAST(#{seq} AS INT) 	 
+	</delete>
+
+</mapper>

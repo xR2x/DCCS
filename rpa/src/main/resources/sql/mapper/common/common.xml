@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.common.CommonMapper"> 
+
+	<select id="getCommonCode" resultType="java.util.HashMap">
+		SELECT
+			seq
+			,code
+			,code_name
+			,extra_code
+		FROM
+			master.common_code
+		WHERE
+			company in ('COMMON',#{company})
+		AND "type" = #{type}	
+		AND deletion_flag IS NULL
+		ORDER BY sort, code_name
+	</select>
+
+	<select id="getUomCode" resultType="java.util.HashMap">
+		SELECT 
+			uom
+			,category
+			,unit_uom
+			,"name"
+			,numerator
+			,denominator
+		FROM
+			master.uom
+		WHERE
+			company in ('COMMON',#{company})
+		<if test="category != null and category != ''">
+			AND category = #{category}
+		</if> 
+	</select>  
+  
+</mapper>

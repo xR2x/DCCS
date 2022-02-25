@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mapper.material.MaterialMapper">
+
+	<sql id="materialReadCondition">		
+		<if test="material != null and material != ''">
+			AND m.material LIKE master.searchType(#{material})
+		</if>
+		<if test="material_multi != null and material_multi != ''">
+			AND m.material IN 
+			<foreach collection="material_multi" item="material_multi" open="(" close=")" separator=",">
+			 #{material_multi}
+			</foreach>
+		</if>	
+		<if test="plant != null and plant != ''">
+			AND p.plant LIKE master.searchType(#{plant})
+		</if> 
+		<if test="description != null and description != ''">
+			AND m.description LIKE master.searchType(#{description})	
+		</if> 
+		<if test="spec != null and spec != ''">
+			AND m.spec LIKE master.searchType(#{spec})	
+		</if> 
+		<if test="material_type != null and material_type != ''">
+			AND m.material_type LIKE master.searchType(#{material_type})
+		</if> 
+		<if test="uom != null and uom != ''">
+			AND m.uom = #{uom}
+		</if>
+		<if test="seq != null and seq != ''">
+			AND p.seq = ${seq}
+		</if>
+		<if test="creator_name != null and creator_name != ''">
+			AND (SELECT "name" FROM master.user WHERE user_id = m.creator) LIKE master.searchType(#{creator_name})
+		</if>
+		<if test="create_date_from != null and create_date_from != ''">
+			AND m.create_date <![CDATA[>]]> TO_DATE(#{create_date_from},'YYYY-MM-DD')
+		</if>
+		<if test="create_date_to != null and create_date_to != ''">
+			AND m.create_date <![CDATA[<]]> TO_DATE(#{create_date_to},'YYYY-MM-DD')
+		</if>
+	</sql>
+  
+	<select id="materialRead" resultType="java.util.HashMap">
+		SELECT 
+			p.seq
+			,m.company
+			,m.material
+			,p.plant
+			,m.description
+			,m.spec
+			,m.material_type
+			,(SELECT code_name FROM master.common_code WHERE company IN ('COMMON', m.company) AND type = 'material_type' AND code = m.material_type) AS material_type_name	
+			,m.uom
+			,m.width
+			,m.height
+			,m.thickness
+			,m.size_uom
+			,m.weight
+			,m.weight_uom
+			,m.remark
+			,m.row_material_code
+			,m.row_material_type
+			,p.seq as plant_seq
+			,p.project_code
+			,(SELECT project_name FROM master.project WHERE company = p.company AND project_code = p.project_code) AS project_name			
+			,p.creator
+			,p.plant_remark
+			,(SELECT "name" FROM master.user WHERE user_id = p.creator) AS creator_name
+			,to_char(p.create_date, 'YYYY-MM-DD HH24:MI') AS create_date
+			,(SELECT COUNT(0) FROM front.files WHERE company = m.company AND file_target_name = '/master/material/attach' AND file_target_seq = m.seq) AS file_count
+			,(SELECT COUNT(0) FROM front.files WHERE company = m.company AND file_target_name = '/master/material/photo' AND file_target_seq = m.seq) AS photo_count
+			,p.tv_eff_flag
+			<if test="use_check != null and use_check != ''">
+				,((SELECT COUNT(0) FROM product.shop_order WHERE company = m.company AND material = m.material AND plant = p.plant AND deletion_flag IS NULL) +  (SELECT COUNT(0) FROM master.bom_header WHERE company = m.company AND material = m.material AND plant = p.plant AND deletion_flag IS NULL) + (SELECT COUNT(0) FROM master.bom WHERE company = m.company AND material = m.material AND plant = p.plant AND deletion_flag IS NULL) + (SELECT COUNT(0) FROM master.routing_header WHERE company = m.company AND material = m.material AND plant = p.plant AND deletion_flag IS NULL)) AS use_count
+			</if>
+		FROM 
+			master.material m
+			JOIN
+			master.material_plant p
+			ON
+				m.company = p.company
+			AND m.material = p.material
+		WHERE
+			m.company = #{company}
+		AND p.deletion_flag IS NULL
+		<include refid="materialReadCondition" />
+		<if test="sort != null and sortType != null">	
+			ORDER BY ${sort} ${sortType}
+		</if>
+		<if test="paging != null and pageSize != null and page != null">	
+			LIMIT ${pageSize} OFFSET (CAST(${page} AS int)-1) * ${pageSize}
+		</if>
+
+	</select>
+
+	<select id="materialCount" resultType="int">
+		SELECT 
+			COUNT(0)
+		FROM
+			master.material m
+			JOIN
+			master.material_plant p
+			ON
+				m.company = p.company
+			AND m.material = p.material
+		WHERE
+			m.company = #{company}
+		<include refid="materialReadCondition" />	
+
+	</select>
+	
+	<select id="getMaterialCount" resultType="int">
+
+		SELECT 
+			COUNT(0)
+		FROM 
+			master.material
+		WHERE
+			company 	= #{company}
+		AND material 	= #{material}	  
+
+	</select>	
+
+	<select id="getMaterialPlantCount" resultType="int">
+
+		SELECT 
+			COUNT(0)
+		FROM
+			master.material_plant
+		WHERE
+			company 	= #{company}
+		AND material 	= #{material}	  
+		AND plant 		= #{plant}
+
+	</select>	
+
+	<select id="getMaterialPlantDeleteCount" resultType="int">  
+		SELECT 
+			COUNT(0)
+		FROM
+			master.material_plant
+		WHERE
+			company 	= #{company}
+		AND material 	= #{material}	  
+		AND plant 		= #{plant}
+		AND deletion_flag IS NOT NULL
+	</select>	
+  
+	<select id="materialCreate" resultType="int">
+		INSERT INTO master.material (	
+			company 
+			,material 
+			,description
+			,spec 
+			,material_type 
+			,uom 
+			,width 
+			,height 
+			,thickness 
+			,size_uom 
+			,weight 
+			,weight_uom 
+			,remark 
+			,row_material_code 
+			,row_material_type
+			,creator
+			,create_date
+		) VALUES (
+			#{company} 
+			,#{material} 
+			,#{description} 
+			,#{spec} 
+			,#{material_type} 
+			,#{uom}
+			,CAST(#{width} AS NUMERIC)
+			,CAST(#{height} AS NUMERIC)
+			,CAST(#{thickness} AS NUMERIC)
+			,#{size_uom} 
+			,CAST(#{weight} AS NUMERIC)
+			,#{weight_uom} 
+			,#{remark} 
+			,#{row_material_code} 
+			,#{row_material_type}
+			,#{user_id}
+			,now()
+		) RETURNING seq
+	</select>
+  
+	<select id="materialPlantCreate" resultType="int">
+
+		INSERT INTO master.material_plant(
+			company 
+			,material 
+			,plant 
+			,project_code 
+			,plant_remark
+			,creator 
+			,create_date
+			,tv_eff_flag
+		) VALUES (
+			#{company} 
+			,#{material} 
+			,#{plant} 
+			,#{project_code} 
+			,#{plant_remark}
+			,#{user_id} 
+			,now()
+			,#{tv_eff_flag} 
+		) RETURNING seq
+
+	</select>
+  
+	<insert id="materialHistoryCreate" >
+
+		INSERT INTO master.material_plant_history(
+					company
+					,material
+					,plant
+					,status
+					,remark
+					,creator
+					,create_date
+				) VALUES (
+					#{company}
+					,#{material}
+					,#{plant}
+					,#{status}
+					,#{remark}
+					,#{user_id}
+					,now()			
+				)
+	</insert>  
+  
+	<update id="materialUpdate">
+		UPDATE 
+			master.material
+		SET 
+			description = #{description}
+			,spec = #{spec}
+			,material_type = #{material_type}
+			,uom = #{uom}
+			,width = CAST(#{width} AS NUMERIC)
+			,height = CAST(#{height} AS NUMERIC)
+			,thickness = CAST(#{thickness} AS NUMERIC)
+			,size_uom = #{size_uom}
+			,weight = CAST(#{weight} AS NUMERIC)
+			,weight_uom = #{weight_uom}
+			,remark = #{remark}
+		WHERE 
+			company = #{company}
+		AND material = #{material}
+	</update>
+  
+	<update id="materialPlantUpdate">
+		UPDATE
+			master.material_plant
+		SET 
+			project_code = #{project_code}
+			,plant_remark = #{plant_remark}
+			,deletion_flag = null
+			,tv_eff_flag = #{tv_eff_flag}
+		WHERE 
+			company = #{company}
+		AND material = #{material}  
+		AND plant = #{plant}
+	</update>  
+  
+	<update id="materialPlantDelete">
+		UPDATE
+			master.material_plant
+		SET 
+			deletion_flag		= 'X'
+		WHERE 
+			company 			= #{company}
+		AND material 			= #{material}  
+		AND plant 				= #{plant}
+	</update>    
+
+	<select id="getMaterialPlantCountAll" resultType="int">  
+		SELECT 
+			COUNT(0)
+		FROM
+			master.material_plant
+		WHERE
+			company 	= #{company}	  
+		AND plant 		= #{plant}	
+		AND deletion_flag IS NULL
+		
+	</select>	
+
+	<select id="materialTvEffCheck" resultType="int">
+		SELECT
+			COUNT(0)
+		FROM
+			master.material_plant AS t1
+		WHERE
+			company = #{company}
+		AND material = #{material}
+		AND plant = #{plant}
+		AND tv_eff_flag = 'X'
+		AND deletion_flag IS NULL
+	</select>
+
+  
+</mapper>
